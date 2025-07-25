@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, nativeImage } = require('electron');
 const path = require('path');
 
 // Configurar argumentos de línea de comandos para evitar errores de cache
@@ -12,6 +12,10 @@ app.commandLine.appendSwitch('--disable-gpu-sandbox');
 // Importar electron-store con ES6 import syntax
 let Store;
 let store;
+
+// Configurar nombre de la aplicación
+app.setName('Arc Container');
+app.setAppUserModelId('com.arccontainer.app');
 
 // Función para inicializar store de forma asíncrona
 async function initStore() {
@@ -58,6 +62,8 @@ function createWindow() {
     // Mostrar ventana cuando esté lista
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
+        // Mostrar notificación de bienvenida
+        showWelcomeNotification();
     });
 
     // Manejar cierre de ventana
@@ -158,6 +164,74 @@ ipcMain.handle('close-window', () => {
         mainWindow.close();
     }
 });
+
+// ================ SISTEMA DE NOTIFICACIONES ================
+
+// Función para crear notificaciones con estilo Arc Container
+function createArcNotification(title, body, service = 'arc-container') {
+    if (!Notification.isSupported()) return;
+
+    // Configuración específica por servicio
+    const serviceConfig = getServiceNotificationConfig(service);
+    
+    const notification = new Notification({
+        title: serviceConfig.emoji ? `${serviceConfig.emoji} ${title}` : `🚀 ${title}`,
+        body: body,
+        icon: path.join(__dirname, 'assets', 'icon.png'),
+        silent: false,
+        timeoutType: 'default',
+        urgency: 'normal'
+    });
+
+    notification.on('click', () => {
+        // Enfocar la ventana principal cuando se haga clic en la notificación
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus();
+            // Opcional: cambiar al servicio específico
+            mainWindow.webContents.send('focus-service', service);
+        }
+    });
+
+    notification.show();
+    return notification;
+}
+
+// Configuración de notificaciones por servicio
+function getServiceNotificationConfig(serviceId) {
+    const configs = {
+        'whatsapp': { name: 'WhatsApp', emoji: '💬', color: '#25D366' },
+        'messenger': { name: 'Messenger', emoji: '💬', color: '#0084FF' },
+        'telegram': { name: 'Telegram', emoji: '✈️', color: '#0088CC' },
+        'discord': { name: 'Discord', emoji: '🎮', color: '#5865F2' },
+        'gmail': { name: 'Gmail', emoji: '📧', color: '#EA4335' },
+        'instagram': { name: 'Instagram', emoji: '📷', color: '#E4405F' },
+        'twitter': { name: 'Twitter', emoji: '🐦', color: '#1DA1F2' },
+        'linkedin': { name: 'LinkedIn', emoji: '💼', color: '#0077B5' },
+        'slack': { name: 'Slack', emoji: '💬', color: '#4A154B' },
+        'teams': { name: 'Teams', emoji: '👥', color: '#6264A7' },
+        'notion': { name: 'Notion', emoji: '📝', color: '#000000' },
+        'spotify': { name: 'Spotify', emoji: '🎵', color: '#1DB954' },
+        'arc-container': { name: 'Arc Container', emoji: '🚀', color: '#007AFF' }
+    };
+    return configs[serviceId] || configs['arc-container'];
+}
+
+// Manejador IPC para mostrar notificaciones desde el renderer
+ipcMain.handle('show-notification', (event, { title, body, service }) => {
+    return createArcNotification(title, body, service);
+});
+
+// Notificación de bienvenida al iniciar
+function showWelcomeNotification() {
+    setTimeout(() => {
+        createArcNotification(
+            'Bienvenido a Arc Container',
+            'Tu centro de comando para todas las aplicaciones web. ¡Todo listo para usar!',
+            'arc-container'
+        );
+    }, 2000); // Esperar 2 segundos después del inicio
+}
 
 // Configuración por defecto
 function getDefaultConfig() {

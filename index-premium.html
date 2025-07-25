@@ -599,6 +599,121 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ================ NOTIFICACIONES TOAST ================ */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: var(--transition);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: white;
+            font-size: 16px;
+        }
+
+        .toast-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .toast-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .toast-body {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .toast-close {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent-blue);
+            border-radius: 0 0 var(--radius) var(--radius);
+            animation: toastProgress 4s linear forwards;
+        }
+
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        /* Colores específicos por servicio */
+        .toast.whatsapp .toast-icon { background: #25D366; }
+        .toast.messenger .toast-icon { background: #0084FF; }
+        .toast.telegram .toast-icon { background: #0088CC; }
+        .toast.discord .toast-icon { background: #5865F2; }
+        .toast.gmail .toast-icon { background: #EA4335; }
+        .toast.instagram .toast-icon { background: #E4405F; }
+        .toast.twitter .toast-icon { background: #1DA1F2; }
+        .toast.linkedin .toast-icon { background: #0077B5; }
+        .toast.slack .toast-icon { background: #4A154B; }
+        .toast.teams .toast-icon { background: #6264A7; }
+        .toast.notion .toast-icon { background: #000000; }
+        .toast.spotify .toast-icon { background: #1DB954; }
+
         /* ================ CUSTOM TITLE BAR ================ */
         .custom-titlebar {
             height: 32px;
@@ -1135,6 +1250,111 @@
                 document.getElementById('settingsBtn').addEventListener('click', () => {
                     this.openSettings();
                 });
+
+                // Sistema de notificaciones
+                this.setupNotifications();
+            }
+
+            // ================ SISTEMA DE NOTIFICACIONES ================
+            setupNotifications() {
+                // Escuchar eventos de foco de servicio desde notificaciones
+                if (window.electronAPI && window.electronAPI.onFocusService) {
+                    window.electronAPI.onFocusService((event, serviceId) => {
+                        console.log('🔔 Focusing service from notification:', serviceId);
+                        this.switchToService(serviceId);
+                    });
+                }
+            }
+
+            // Mostrar notificación de prueba (para demostración)
+            showTestNotification(serviceId) {
+                if (window.electronAPI && window.electronAPI.showNotification) {
+                    const service = this.services.find(s => s.id === serviceId);
+                    if (service) {
+                        window.electronAPI.showNotification(
+                            'Nuevo mensaje',
+                            `Tienes un nuevo mensaje en ${service.name}`,
+                            serviceId
+                        );
+                    }
+                }
+            }
+
+            // Simular notificaciones para demostración
+            simulateNotifications() {
+                // Notificación de demostración después de 5 segundos
+                setTimeout(() => {
+                    this.showTestNotification('whatsapp');
+                }, 5000);
+
+                // Toast de demostración después de 3 segundos
+                setTimeout(() => {
+                    this.showToast('¡Bienvenido!', 'Arc Container está listo para usar', 'arc-container');
+                }, 3000);
+            }
+
+            // ================ SISTEMA DE TOAST ================
+            showToast(title, body, serviceId = 'arc-container', duration = 4000) {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+
+                const service = this.services.find(s => s.id === serviceId) || { 
+                    id: 'arc-container', 
+                    name: 'Arc Container', 
+                    icon: 'fas fa-cube' 
+                };
+
+                const toast = document.createElement('div');
+                toast.className = `toast ${serviceId}`;
+                toast.innerHTML = `
+                    <div class="toast-icon">
+                        <i class="${service.icon}"></i>
+                    </div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-body">${body}</div>
+                    </div>
+                    <button class="toast-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="toast-progress"></div>
+                `;
+
+                // Evento para cerrar
+                toast.querySelector('.toast-close').addEventListener('click', () => {
+                    this.removeToast(toast);
+                });
+
+                // Click en el toast para enfocar servicio
+                toast.addEventListener('click', (e) => {
+                    if (!e.target.closest('.toast-close')) {
+                        this.switchToService(serviceId);
+                        this.removeToast(toast);
+                    }
+                });
+
+                container.appendChild(toast);
+
+                // Mostrar con animación
+                setTimeout(() => toast.classList.add('show'), 100);
+
+                // Auto-remove después del tiempo especificado
+                setTimeout(() => {
+                    this.removeToast(toast);
+                }, duration);
+
+                return toast;
+            }
+
+            removeToast(toast) {
+                if (!toast || !toast.parentNode) return;
+                
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
             }
 
             switchToService(serviceId) {
@@ -1431,5 +1651,8 @@
             window.arcContainer = new ArcContainerPremium();
         });
     </script>
+
+    <!-- Contenedor para notificaciones toast -->
+    <div class="toast-container" id="toastContainer"></div>
 </body>
 </html>

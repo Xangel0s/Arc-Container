@@ -1,7 +1,7 @@
 {
-  "name": "my-app-container",
+  "name": "arc-container",
   "version": "1.0.0",
-  "description": "Un contenedor de aplicaciones web sincronizable con Nextcloud",
+  "description": "Arc Container - Gestor profesional de aplicaciones web",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -15,15 +15,15 @@
   "keywords": [
     "electron",
     "webview",
-    "nextcloud",
-    "apps",
-    "container"
+    "messaging",
+    "productivity",
+    "arc-container"
   ],
-  "author": "Tu Nombre",
+  "author": "Arc Container Team",
   "license": "MIT",
   "build": {
-    "appId": "com.yourcompany.my-app-container",
-    "productName": "My App Container",
+    "appId": "com.arccontainer.app",
+    "productName": "Arc Container",
     "directories": {
       "output": "dist"
     },

@@ -15,10 +15,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
     toggleMaximize: () => ipcRenderer.invoke('toggle-maximize'),
     closeWindow: () => ipcRenderer.invoke('close-window'),
     
+    // Sistema de notificaciones
+    showNotification: (title, body, service) => ipcRenderer.invoke('show-notification', { title, body, service }),
+    
     // Información del sistema
     platform: process.platform,
     
-    // Eventos personalizados (para futuras funcionalidades)
+    // Eventos personalizados
     onNotification: (callback) => ipcRenderer.on('notification', callback),
-    removeNotificationListener: () => ipcRenderer.removeAllListeners('notification')
+    onFocusService: (callback) => ipcRenderer.on('focus-service', callback),
+    removeNotificationListener: () => ipcRenderer.removeAllListeners('notification'),
+    removeFocusServiceListener: () => ipcRenderer.removeAllListeners('focus-service')
 });
