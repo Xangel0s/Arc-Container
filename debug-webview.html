@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Webview Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #2c2c2c;
+            color: white;
+        }
+        
+        .test-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .test-section {
+            border: 1px solid #444;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        webview {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #00ff00;
+            border-radius: 4px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #007acc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #005a9e;
+        }
+        
+        .log {
+            background: #1a1a1a;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 4px;
+        }
+        
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        .info { color: #74c0fc; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug - Test de Webviews</h1>
+    
+    <div class="test-container">
+        <div class="test-section">
+            <h2>Test 1: Webview Básico</h2>
+            <p>Este webview debería cargar Google:</p>
+            <webview id="test1" src="https://www.google.com" partition="persist:test1"></webview>
+            <button onclick="reloadWebview('test1')">🔄 Recargar</button>
+            <button onclick="openDevTools('test1')">🔧 DevTools</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Test 2: WhatsApp Web</h2>
+            <p>Este webview debería cargar WhatsApp Web:</p>
+            <webview id="test2" src="https://web.whatsapp.com" partition="persist:whatsapp"></webview>
+            <button onclick="reloadWebview('test2')">🔄 Recargar</button>
+            <button onclick="openDevTools('test2')">🔧 DevTools</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Test 3: Logs de Debug</h2>
+            <div id="logs" class="log">
+                <div class="info">Iniciando tests de webview...</div>
+            </div>
+            <button onclick="clearLogs()">🗑️ Limpiar Logs</button>
+            <button onclick="runTests()">▶️ Ejecutar Tests</button>
+        </div>
+    </div>
+
+    <script>
+        let logContainer;
+        
+        function addLog(message, type = 'info') {
+            if (!logContainer) {
+                logContainer = document.getElementById('logs');
+            }
+            
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = type;
+            logEntry.textContent = `[${time}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '<div class="info">Logs limpiados...</div>';
+        }
+        
+        function reloadWebview(id) {
+            const webview = document.getElementById(id);
+            if (webview) {
+                addLog(`Recargando webview: ${id}`, 'info');
+                webview.reload();
+            } else {
+                addLog(`Error: No se encontró webview ${id}`, 'error');
+            }
+        }
+        
+        function openDevTools(id) {
+            const webview = document.getElementById(id);
+            if (webview) {
+                addLog(`Abriendo DevTools para: ${id}`, 'info');
+                webview.openDevTools();
+            } else {
+                addLog(`Error: No se encontró webview ${id}`, 'error');
+            }
+        }
+        
+        function runTests() {
+            addLog('Ejecutando tests de webview...', 'info');
+            
+            // Test 1: Verificar que los webviews existen
+            const webviews = document.querySelectorAll('webview');
+            addLog(`Encontrados ${webviews.length} webviews`, webviews.length > 0 ? 'success' : 'error');
+            
+            webviews.forEach((webview, index) => {
+                addLog(`Webview ${index + 1}: id=${webview.id}, src=${webview.src}`, 'info');
+                
+                // Agregar event listeners
+                webview.addEventListener('loadstart', () => {
+                    addLog(`${webview.id}: Iniciando carga...`, 'info');
+                });
+                
+                webview.addEventListener('loadstop', () => {
+                    addLog(`${webview.id}: Carga completada ✓`, 'success');
+                });
+                
+                webview.addEventListener('loaderror', (e) => {
+                    addLog(`${webview.id}: Error de carga - ${e.errorDescription}`, 'error');
+                });
+                
+                webview.addEventListener('dom-ready', () => {
+                    addLog(`${webview.id}: DOM listo ✓`, 'success');
+                });
+                
+                webview.addEventListener('did-fail-load', (e) => {
+                    addLog(`${webview.id}: Fallo al cargar - ${e.errorDescription}`, 'error');
+                });
+            });
+            
+            // Test 2: Verificar configuración de Electron
+            addLog(`User Agent: ${navigator.userAgent}`, 'info');
+            addLog(`WebView tag support: ${typeof HTMLWebViewElement !== 'undefined'}`, 'info');
+        }
+        
+        // Ejecutar tests al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            addLog('Página cargada, iniciando tests...', 'success');
+            runTests();
+        });
+        
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            addLog(`Error global: ${e.message}`, 'error');
+        });
+    </script>
+</body>
+</html>

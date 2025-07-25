@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arc Container - Premium Edition</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #252525;
+            --bg-hover: #2a2a2a;
+            --bg-active: #007AFF;
+            --border-color: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-muted: #777777;
+            --accent-blue: #007AFF;
+            --accent-green: #34C759;
+            --accent-orange: #FF9500;
+            --accent-red: #FF3B30;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --radius: 8px;
+            --transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ================ SIDEBAR ================ */
+        .sidebar {
+            width: 70px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            position: relative;
+            z-index: 100;
+        }
+
+        .app-brand {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-blue), #5AC8FA);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .app-brand i {
+            font-size: 18px;
+            color: white;
+        }
+
+        .tooltip {
+            position: absolute;
+            left: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 5px solid transparent;
+            border-right-color: var(--border-color);
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 4px solid transparent;
+            border-right-color: var(--bg-tertiary);
+            margin-left: 1px;
+        }
+
+        .services-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .service-item {
+            width: 45px;
+            height: 45px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+        }
+
+        .service-item:hover {
+            transform: translateX(3px);
+            background: var(--bg-hover);
+            border-color: var(--service-color);
+        }
+
+        .service-item:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .service-item.active {
+            background: var(--service-color);
+            border-color: var(--service-color);
+            box-shadow: 0 0 0 3px rgba(var(--service-rgb), 0.2);
+        }
+
+        .service-icon {
+            font-size: 16px;
+            color: var(--service-color);
+            transition: var(--transition);
+        }
+
+        .service-item.active .service-icon {
+            color: white;
+        }
+
+        .service-badge {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: var(--accent-red);
+            color: white;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+            border: 2px solid var(--bg-secondary);
+        }
+
+        /* ================ MAIN CONTENT ================ */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .header-bar {
+            height: 60px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: relative;
+            z-index: 50;
+        }
+
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .current-service-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--current-color, var(--accent-blue));
+            color: white;
+        }
+
+        .service-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .service-details p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-button {
+            width: 35px;
+            height: 35px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .control-button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--text-muted);
+        }
+
+        .content-view {
+            flex: 1;
+            position: relative;
+            background: var(--bg-primary);
+        }
+
+        .webview-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .webview-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        webview {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        /* Welcome Screen */
+        .welcome-view {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-blue), #5AC8FA);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 400px;
+            line-height: 1.5;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--bg-tertiary);
+            border-top: 3px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: between;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: var(--transition);
+            margin-left: auto;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .config-section {
+            margin-bottom: 24px;
+        }
+
+        .config-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .config-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .config-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .config-control {
+            width: 100%;
+        }
+
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .theme-option {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .theme-option:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .theme-option.active {
+            border-color: var(--accent-blue);
+            background: rgba(0, 122, 255, 0.1);
+        }
+
+        .theme-preview {
+            width: 40px;
+            height: 30px;
+            border-radius: 4px;
+            margin: 0 auto 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .switch-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+        }
+
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .switch.active {
+            background: var(--accent-blue);
+        }
+
+        .switch-handle {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .switch.active .switch-handle {
+            transform: translateX(20px);
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .modal-button.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .modal-button.secondary:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .modal-button.primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .modal-button.primary:hover {
+            background: #0056cc;
+        }
+
+        /* Service Colors */
+        .service-whatsapp { --service-color: #25D366; --service-rgb: 37, 211, 102; }
+        .service-messenger { --service-color: #0084FF; --service-rgb: 0, 132, 255; }
+        .service-telegram { --service-color: #0088CC; --service-rgb: 0, 136, 204; }
+        .service-discord { --service-color: #5865F2; --service-rgb: 88, 101, 242; }
+        .service-gmail { --service-color: #EA4335; --service-rgb: 234, 67, 53; }
+        .service-instagram { --service-color: #E4405F; --service-rgb: 228, 64, 95; }
+        .service-twitter { --service-color: #1DA1F2; --service-rgb: 29, 161, 242; }
+        .service-linkedin { --service-color: #0077B5; --service-rgb: 0, 119, 181; }
+        .service-slack { --service-color: #4A154B; --service-rgb: 74, 21, 75; }
+        .service-teams { --service-color: #6264A7; --service-rgb: 98, 100, 167; }
+        .service-notion { --service-color: #000000; --service-rgb: 0, 0, 0; }
+        .service-spotify { --service-color: #1DB954; --service-rgb: 29, 185, 84; }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="app-brand">
+                <i class="fas fa-cube"></i>
+                <div class="tooltip">Arc Container</div>
+            </div>
+            
+            <div class="services-container" id="servicesContainer">
+                <!-- Services will be populated here -->
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header Bar -->
+            <div class="header-bar">
+                <div class="service-info" id="serviceInfo">
+                    <div class="current-service-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="service-details">
+                        <h3>Arc Container</h3>
+                        <p>Selecciona un servicio para comenzar</p>
+                    </div>
+                </div>
+                
+                <div class="header-controls">
+                    <button class="control-button" id="reloadBtn" title="Recargar">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="control-button" id="devToolsBtn" title="DevTools">
+                        <i class="fas fa-code"></i>
+                    </button>
+                    <button class="control-button" id="settingsBtn" title="Configuración">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content View -->
+            <div class="content-view" id="contentView">
+                <!-- Welcome Screen -->
+                <div class="welcome-view" id="welcomeView">
+                    <div class="welcome-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h1 class="welcome-title">Arc Container</h1>
+                    <p class="welcome-subtitle">
+                        La forma más elegante de gestionar todas tus aplicaciones web.
+                        Selecciona un servicio del panel lateral para comenzar.
+                    </p>
+                </div>
+
+                <!-- Loading Overlay -->
+                <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Cargando servicio...</div>
+                </div>
+
+                <!-- Webviews will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Configuración -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-cog"></i>
+                    Configuración
+                </h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Tema -->
+                <div class="config-section">
+                    <label class="config-label">Tema de la aplicación</label>
+                    <div class="config-description">Selecciona el esquema de colores de la interfaz</div>
+                    <div class="theme-selector">
+                        <div class="theme-option active" data-theme="dark">
+                            <div class="theme-preview" style="background: linear-gradient(45deg, #0f0f0f 50%, #1a1a1a 50%);"></div>
+                            <div class="theme-name">Oscuro</div>
+                        </div>
+                        <div class="theme-option" data-theme="light">
+                            <div class="theme-preview" style="background: linear-gradient(45deg, #ffffff 50%, #f5f5f5 50%);"></div>
+                            <div class="theme-name">Claro</div>
+                        </div>
+                        <div class="theme-option" data-theme="auto">
+                            <div class="theme-preview" style="background: linear-gradient(45deg, #0f0f0f 25%, #ffffff 25%, #ffffff 50%, #0f0f0f 50%);"></div>
+                            <div class="theme-name">Auto</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comportamiento -->
+                <div class="config-section">
+                    <label class="config-label">Comportamiento</label>
+                    
+                    <div class="switch-control">
+                        <div>
+                            <div style="font-size: 14px; color: var(--text-primary);">Iniciar minimizado</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">La aplicación se inicia en la bandeja del sistema</div>
+                        </div>
+                        <div class="switch" id="startMinimized">
+                            <div class="switch-handle"></div>
+                        </div>
+                    </div>
+
+                    <div class="switch-control">
+                        <div>
+                            <div style="font-size: 14px; color: var(--text-primary);">Cerrar a la bandeja</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Al cerrar, la aplicación permanece en la bandeja</div>
+                        </div>
+                        <div class="switch active" id="closeToTray">
+                            <div class="switch-handle"></div>
+                        </div>
+                    </div>
+
+                    <div class="switch-control">
+                        <div>
+                            <div style="font-size: 14px; color: var(--text-primary);">Auto-iniciar último servicio</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Abrir automáticamente el último servicio usado</div>
+                        </div>
+                        <div class="switch active" id="autoStartLast">
+                            <div class="switch-handle"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notificaciones -->
+                <div class="config-section">
+                    <label class="config-label">Notificaciones</label>
+                    
+                    <div class="switch-control">
+                        <div>
+                            <div style="font-size: 14px; color: var(--text-primary);">Mostrar notificaciones</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Recibir notificaciones de los servicios</div>
+                        </div>
+                        <div class="switch active" id="showNotifications">
+                            <div class="switch-handle"></div>
+                        </div>
+                    </div>
+
+                    <div class="switch-control">
+                        <div>
+                            <div style="font-size: 14px; color: var(--text-primary);">Sonido de notificación</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Reproducir sonido al recibir notificaciones</div>
+                        </div>
+                        <div class="switch active" id="notificationSound">
+                            <div class="switch-handle"></div>
+                        </div>
+                    </div>
+
+                    <div class="switch-control">
+                        <div>
+                            <div style="font-size: 14px; color: var(--text-primary);">Badges de contador</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Mostrar números en los iconos de servicios</div>
+                        </div>
+                        <div class="switch active" id="badgeCount">
+                            <div class="switch-handle"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Avanzado -->
+                <div class="config-section">
+                    <label class="config-label">Configuración avanzada</label>
+                    
+                    <div class="switch-control">
+                        <div>
+                            <div style="font-size: 14px; color: var(--text-primary);">Ocultar barra de menú</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Ocultar la barra de menú superior (Alt para mostrar)</div>
+                        </div>
+                        <div class="switch active" id="autoHideMenuBar">
+                            <div class="switch-handle"></div>
+                        </div>
+                    </div>
+
+                    <div class="switch-control">
+                        <div>
+                            <div style="font-size: 14px; color: var(--text-primary);">Hardware acceleration</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Usar aceleración por hardware (requiere reinicio)</div>
+                        </div>
+                        <div class="switch active" id="hardwareAcceleration">
+                            <div class="switch-handle"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-button secondary" id="resetSettings">Restablecer</button>
+                <button class="modal-button primary" id="saveSettings">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ArcContainerPremium {
+            constructor() {
+                this.services = [
+                    {
+                        id: 'whatsapp',
+                        name: 'WhatsApp',
+                        url: 'https://web.whatsapp.com/',
+                        icon: 'fab fa-whatsapp',
+                        notifications: 0
+                    },
+                    {
+                        id: 'messenger',
+                        name: 'Messenger',
+                        url: 'https://www.messenger.com/',
+                        icon: 'fab fa-facebook-messenger',
+                        notifications: 0
+                    },
+                    {
+                        id: 'telegram',
+                        name: 'Telegram',
+                        url: 'https://web.telegram.org/',
+                        icon: 'fab fa-telegram-plane',
+                        notifications: 0
+                    },
+                    {
+                        id: 'discord',
+                        name: 'Discord',
+                        url: 'https://discord.com/app',
+                        icon: 'fab fa-discord',
+                        notifications: 0
+                    },
+                    {
+                        id: 'gmail',
+                        name: 'Gmail',
+                        url: 'https://mail.google.com/mail/u/0/',
+                        icon: 'fas fa-envelope',
+                        notifications: 0
+                    },
+                    {
+                        id: 'instagram',
+                        name: 'Instagram',
+                        url: 'https://www.instagram.com/direct/inbox/',
+                        icon: 'fab fa-instagram',
+                        notifications: 0
+                    },
+                    {
+                        id: 'twitter',
+                        name: 'Twitter',
+                        url: 'https://twitter.com/',
+                        icon: 'fab fa-twitter',
+                        notifications: 0
+                    },
+                    {
+                        id: 'linkedin',
+                        name: 'LinkedIn',
+                        url: 'https://www.linkedin.com/messaging/',
+                        icon: 'fab fa-linkedin',
+                        notifications: 0
+                    },
+                    {
+                        id: 'slack',
+                        name: 'Slack',
+                        url: 'https://app.slack.com/',
+                        icon: 'fab fa-slack',
+                        notifications: 0
+                    },
+                    {
+                        id: 'teams',
+                        name: 'Teams',
+                        url: 'https://teams.microsoft.com/',
+                        icon: 'fab fa-microsoft',
+                        notifications: 0
+                    },
+                    {
+                        id: 'notion',
+                        name: 'Notion',
+                        url: 'https://www.notion.so/',
+                        icon: 'fas fa-sticky-note',
+                        notifications: 0
+                    },
+                    {
+                        id: 'spotify',
+                        name: 'Spotify',
+                        url: 'https://open.spotify.com/',
+                        icon: 'fab fa-spotify',
+                        notifications: 0
+                    }
+                ];
+                
+                this.currentService = null;
+                this.webviews = new Map();
+                this.settings = {
+                    theme: 'dark',
+                    startMinimized: false,
+                    closeToTray: true,
+                    autoStartLast: true,
+                    showNotifications: true,
+                    notificationSound: true,
+                    badgeCount: true,
+                    autoHideMenuBar: true,
+                    hardwareAcceleration: true
+                };
+                
+                this.init();
+            }
+
+            init() {
+                console.log('🚀 Initializing Arc Container Premium...');
+                this.renderServices();
+                this.createWebviews();
+                this.setupEventListeners();
+                this.setupModal();
+                this.loadSettings();
+                this.simulateNotifications();
+                console.log('✅ Arc Container Premium ready');
+            }
+
+            renderServices() {
+                const container = document.getElementById('servicesContainer');
+                
+                this.services.forEach(service => {
+                    const item = document.createElement('div');
+                    item.className = `service-item service-${service.id}`;
+                    item.setAttribute('data-service', service.id);
+                    
+                    item.innerHTML = `
+                        <i class="service-icon ${service.icon}"></i>
+                        <div class="tooltip">${service.name}</div>
+                        ${service.notifications > 0 ? `<div class="service-badge">${service.notifications}</div>` : ''}
+                    `;
+                    
+                    item.addEventListener('click', () => {
+                        this.switchToService(service.id);
+                    });
+                    
+                    container.appendChild(item);
+                });
+            }
+
+            createWebviews() {
+                const container = document.getElementById('contentView');
+                
+                this.services.forEach(service => {
+                    const webviewContainer = document.createElement('div');
+                    webviewContainer.className = 'webview-container';
+                    webviewContainer.id = `container-${service.id}`;
+                    
+                    const webview = document.createElement('webview');
+                    webview.id = `webview-${service.id}`;
+                    webview.src = service.url;
+                    webview.partition = `persist:${service.id}`;
+                    webview.allowpopups = true;
+                    webview.useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+                    
+                    this.setupWebviewEvents(webview, service);
+                    
+                    webviewContainer.appendChild(webview);
+                    container.appendChild(webviewContainer);
+                    
+                    this.webviews.set(service.id, webview);
+                });
+            }
+
+            setupWebviewEvents(webview, service) {
+                webview.addEventListener('loadstart', () => {
+                    console.log(`🔄 ${service.name}: Loading...`);
+                    if (this.currentService === service.id) {
+                        this.showLoading(`Cargando ${service.name}...`);
+                    }
+                });
+                
+                webview.addEventListener('loadstop', () => {
+                    console.log(`✅ ${service.name}: Loaded`);
+                    this.hideLoading();
+                });
+                
+                webview.addEventListener('dom-ready', () => {
+                    console.log(`🎯 ${service.name}: DOM Ready`);
+                    
+                    // Inyectar estilos personalizados para mejorar la apariencia
+                    if (service.id === 'whatsapp') {
+                        webview.insertCSS(`
+                            body { 
+                                background: #0f0f0f !important; 
+                            }
+                            ._2dloQ, .landing-wrapper {
+                                background: #1a1a1a !important;
+                            }
+                            ._3WByx {
+                                background: #0f0f0f !important;
+                            }
+                        `);
+                    }
+                });
+                
+                webview.addEventListener('did-fail-load', (e) => {
+                    console.error(`❌ ${service.name}: Load failed`, e.errorDescription);
+                    this.hideLoading();
+                });
+            }
+
+            setupEventListeners() {
+                document.getElementById('reloadBtn').addEventListener('click', () => {
+                    this.reloadCurrentService();
+                });
+
+                document.getElementById('devToolsBtn').addEventListener('click', () => {
+                    this.openDevTools();
+                });
+
+                document.getElementById('settingsBtn').addEventListener('click', () => {
+                    this.openSettings();
+                });
+            }
+
+            switchToService(serviceId) {
+                const service = this.services.find(s => s.id === serviceId);
+                if (!service) return;
+
+                console.log(`🔄 Switching to ${service.name}`);
+
+                // Update active states
+                document.querySelectorAll('.service-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[data-service="${serviceId}"]`).classList.add('active');
+
+                // Hide welcome screen
+                document.getElementById('welcomeView').style.display = 'none';
+
+                // Switch webviews
+                document.querySelectorAll('.webview-container').forEach(container => {
+                    container.classList.remove('active');
+                });
+                document.getElementById(`container-${serviceId}`).classList.add('active');
+
+                // Update header
+                this.updateServiceInfo(service);
+                this.currentService = serviceId;
+
+                // Clear notifications for this service
+                service.notifications = 0;
+                this.updateServiceBadge(serviceId);
+            }
+
+            updateServiceInfo(service) {
+                const serviceInfo = document.getElementById('serviceInfo');
+                const root = document.documentElement;
+                
+                serviceInfo.innerHTML = `
+                    <div class="current-service-icon">
+                        <i class="${service.icon}"></i>
+                    </div>
+                    <div class="service-details">
+                        <h3>${service.name}</h3>
+                        <p>Conectado y activo</p>
+                    </div>
+                `;
+                
+                // Set current color
+                const serviceElement = document.querySelector(`.service-${service.id}`);
+                const color = getComputedStyle(serviceElement).getPropertyValue('--service-color');
+                root.style.setProperty('--current-color', color);
+            }
+
+            updateServiceBadge(serviceId) {
+                const service = this.services.find(s => s.id === serviceId);
+                const serviceItem = document.querySelector(`[data-service="${serviceId}"]`);
+                const existingBadge = serviceItem.querySelector('.service-badge');
+                
+                if (service.notifications > 0) {
+                    if (!existingBadge) {
+                        const badge = document.createElement('div');
+                        badge.className = 'service-badge';
+                        badge.textContent = service.notifications;
+                        serviceItem.appendChild(badge);
+                    } else {
+                        existingBadge.textContent = service.notifications;
+                    }
+                } else if (existingBadge) {
+                    existingBadge.remove();
+                }
+            }
+
+            showLoading(text = 'Cargando...') {
+                const overlay = document.getElementById('loadingOverlay');
+                const loadingText = overlay.querySelector('.loading-text');
+                loadingText.textContent = text;
+                overlay.style.display = 'flex';
+            }
+
+            hideLoading() {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+
+            reloadCurrentService() {
+                if (!this.currentService) return;
+                const webview = this.webviews.get(this.currentService);
+                if (webview) {
+                    console.log(`🔄 Reloading ${this.currentService}`);
+                    webview.reload();
+                }
+            }
+
+            openDevTools() {
+                if (!this.currentService) return;
+                const webview = this.webviews.get(this.currentService);
+                if (webview) {
+                    console.log(`🔧 Opening DevTools for ${this.currentService}`);
+                    webview.openDevTools();
+                }
+            }
+
+            openSettings() {
+                console.log('⚙️ Opening settings...');
+                document.getElementById('settingsModal').classList.add('active');
+            }
+
+            setupModal() {
+                // Cerrar modal
+                document.getElementById('closeModal').addEventListener('click', () => {
+                    this.closeModal();
+                });
+
+                // Cerrar al hacer click fuera
+                document.getElementById('settingsModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'settingsModal') {
+                        this.closeModal();
+                    }
+                });
+
+                // Selector de tema
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+                        option.classList.add('active');
+                        this.settings.theme = option.dataset.theme;
+                        this.applyTheme(this.settings.theme);
+                    });
+                });
+
+                // Switches
+                document.querySelectorAll('.switch').forEach(switchEl => {
+                    switchEl.addEventListener('click', () => {
+                        switchEl.classList.toggle('active');
+                        const settingKey = switchEl.id;
+                        this.settings[settingKey] = switchEl.classList.contains('active');
+                    });
+                });
+
+                // Botones del modal
+                document.getElementById('saveSettings').addEventListener('click', () => {
+                    this.saveSettings();
+                    this.closeModal();
+                });
+
+                document.getElementById('resetSettings').addEventListener('click', () => {
+                    this.resetSettings();
+                });
+
+                // Escape para cerrar
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeModal();
+                    }
+                });
+            }
+
+            closeModal() {
+                document.getElementById('settingsModal').classList.remove('active');
+            }
+
+            applyTheme(theme) {
+                const root = document.documentElement;
+                
+                if (theme === 'light') {
+                    root.style.setProperty('--bg-primary', '#ffffff');
+                    root.style.setProperty('--bg-secondary', '#f8f9fa');
+                    root.style.setProperty('--bg-tertiary', '#e9ecef');
+                    root.style.setProperty('--bg-hover', '#dee2e6');
+                    root.style.setProperty('--border-color', '#dee2e6');
+                    root.style.setProperty('--text-primary', '#212529');
+                    root.style.setProperty('--text-secondary', '#6c757d');
+                    root.style.setProperty('--text-muted', '#adb5bd');
+                } else if (theme === 'dark') {
+                    root.style.setProperty('--bg-primary', '#0f0f0f');
+                    root.style.setProperty('--bg-secondary', '#1a1a1a');
+                    root.style.setProperty('--bg-tertiary', '#252525');
+                    root.style.setProperty('--bg-hover', '#2a2a2a');
+                    root.style.setProperty('--border-color', '#333333');
+                    root.style.setProperty('--text-primary', '#ffffff');
+                    root.style.setProperty('--text-secondary', '#b3b3b3');
+                    root.style.setProperty('--text-muted', '#777777');
+                } else if (theme === 'auto') {
+                    // Detectar preferencia del sistema
+                    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    this.applyTheme(isDark ? 'dark' : 'light');
+                    return;
+                }
+                
+                console.log(`🎨 Theme applied: ${theme}`);
+            }
+
+            loadSettings() {
+                // Cargar configuración desde localStorage
+                const saved = localStorage.getItem('arcContainerSettings');
+                if (saved) {
+                    this.settings = { ...this.settings, ...JSON.parse(saved) };
+                }
+
+                // Aplicar configuración a la UI
+                this.applyTheme(this.settings.theme);
+                
+                // Actualizar switches
+                Object.keys(this.settings).forEach(key => {
+                    const switchEl = document.getElementById(key);
+                    if (switchEl) {
+                        switchEl.classList.toggle('active', this.settings[key]);
+                    }
+                });
+
+                // Actualizar selector de tema
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.toggle('active', option.dataset.theme === this.settings.theme);
+                });
+            }
+
+            saveSettings() {
+                localStorage.setItem('arcContainerSettings', JSON.stringify(this.settings));
+                console.log('💾 Settings saved:', this.settings);
+                
+                // Mostrar notificación de guardado
+                this.showNotification('Configuración guardada', 'success');
+            }
+
+            resetSettings() {
+                this.settings = {
+                    theme: 'dark',
+                    startMinimized: false,
+                    closeToTray: true,
+                    autoStartLast: true,
+                    showNotifications: true,
+                    notificationSound: true,
+                    badgeCount: true,
+                    autoHideMenuBar: true,
+                    hardwareAcceleration: true
+                };
+                
+                this.loadSettings();
+                console.log('🔄 Settings reset to defaults');
+                this.showNotification('Configuración restablecida', 'info');
+            }
+
+            showNotification(message, type = 'info') {
+                // Crear notificación temporal
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--bg-tertiary);
+                    color: var(--text-primary);
+                    padding: 12px 16px;
+                    border-radius: 8px;
+                    border: 1px solid var(--border-color);
+                    box-shadow: var(--shadow);
+                    z-index: 10000;
+                    font-size: 14px;
+                    opacity: 0;
+                    transform: translateX(100%);
+                    transition: all 0.3s ease;
+                `;
+                
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                // Mostrar
+                setTimeout(() => {
+                    notification.style.opacity = '1';
+                    notification.style.transform = 'translateX(0)';
+                }, 100);
+                
+                // Ocultar y remover
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+            }
+
+            simulateNotifications() {
+                // Simulate some notifications
+                setInterval(() => {
+                    const randomService = this.services[Math.floor(Math.random() * this.services.length)];
+                    if (randomService.id !== this.currentService && Math.random() > 0.8) {
+                        randomService.notifications = Math.min(randomService.notifications + 1, 9);
+                        this.updateServiceBadge(randomService.id);
+                    }
+                }, 30000); // Every 30 seconds
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            window.arcContainer = new ArcContainerPremium();
+        });
+    </script>
+</body>
+</html>

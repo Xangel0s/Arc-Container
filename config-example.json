@@ -1,0 +1,152 @@
+{
+  "version": "1.0.0",
+  "lastUpdate": "2025-01-20T10:30:00Z",
+  "services": [
+    {
+      "id": "whatsapp",
+      "name": "WhatsApp",
+      "url": "https://web.whatsapp.com/",
+      "icon": "WA",
+      "backgroundColor": "#25D366",
+      "enabled": true,
+      "position": 1
+    },
+    {
+      "id": "messenger",
+      "name": "Messenger",
+      "url": "https://www.messenger.com/",
+      "icon": "MS",
+      "backgroundColor": "#1877F2",
+      "enabled": true,
+      "position": 2
+    },
+    {
+      "id": "telegram",
+      "name": "Telegram",
+      "url": "https://web.telegram.org/",
+      "icon": "TG",
+      "backgroundColor": "#0088cc",
+      "enabled": true,
+      "position": 3
+    },
+    {
+      "id": "discord",
+      "name": "Discord",
+      "url": "https://discord.com/app",
+      "icon": "DC",
+      "backgroundColor": "#5865F2",
+      "enabled": true,
+      "position": 4
+    },
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "url": "https://mail.google.com/mail/u/0/",
+      "icon": "GM",
+      "backgroundColor": "#EA4335",
+      "enabled": true,
+      "position": 5
+    },
+    {
+      "id": "instagram",
+      "name": "Instagram",
+      "url": "https://www.instagram.com/direct/inbox/",
+      "icon": "IG",
+      "backgroundColor": "#E4405F",
+      "enabled": true,
+      "position": 6
+    },
+    {
+      "id": "twitter",
+      "name": "Twitter/X",
+      "url": "https://twitter.com/",
+      "icon": "X",
+      "backgroundColor": "#000000",
+      "enabled": true,
+      "position": 7
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "url": "https://www.linkedin.com/messaging/",
+      "icon": "LI",
+      "backgroundColor": "#0A66C2",
+      "enabled": true,
+      "position": 8
+    },
+    {
+      "id": "slack",
+      "name": "Slack",
+      "url": "https://app.slack.com/",
+      "icon": "SL",
+      "backgroundColor": "#4A154B",
+      "enabled": false,
+      "position": 9
+    },
+    {
+      "id": "teams",
+      "name": "Microsoft Teams",
+      "url": "https://teams.microsoft.com/",
+      "icon": "MT",
+      "backgroundColor": "#6264A7",
+      "enabled": false,
+      "position": 10
+    },
+    {
+      "id": "notion",
+      "name": "Notion",
+      "url": "https://www.notion.so/",
+      "icon": "NO",
+      "backgroundColor": "#000000",
+      "enabled": false,
+      "position": 11
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "url": "https://open.spotify.com/",
+      "icon": "SP",
+      "backgroundColor": "#1DB954",
+      "enabled": false,
+      "position": 12
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "url": "https://www.youtube.com/",
+      "icon": "YT",
+      "backgroundColor": "#FF0000",
+      "enabled": false,
+      "position": 13
+    },
+    {
+      "id": "netflix",
+      "name": "Netflix",
+      "url": "https://www.netflix.com/",
+      "icon": "NF",
+      "backgroundColor": "#E50914",
+      "enabled": false,
+      "position": 14
+    },
+    {
+      "id": "twitch",
+      "name": "Twitch",
+      "url": "https://www.twitch.tv/",
+      "icon": "TW",
+      "backgroundColor": "#9146FF",
+      "enabled": false,
+      "position": 15
+    }
+  ],
+  "preferences": {
+    "theme": "default",
+    "autoStartLastService": true,
+    "showNotifications": true,
+    "minimizeToTray": true,
+    "startMinimized": false,
+    "closeToTray": true,
+    "notificationSound": true,
+    "badgeCount": true,
+    "autoHideMenuBar": false
+  }
+}

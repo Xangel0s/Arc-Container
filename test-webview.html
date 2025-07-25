@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Webview</title>
+</head>
+<body>
+    <h1>Test de Webview</h1>
+    
+    <webview 
+        id="test-whatsapp" 
+        src="https://web.whatsapp.com/" 
+        style="width: 800px; height: 600px; border: 1px solid #ccc;"
+        partition="persist:whatsapp"
+        allowpopups
+        useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36">
+    </webview>
+    
+    <script>
+        const webview = document.getElementById('test-whatsapp');
+        
+        webview.addEventListener('dom-ready', () => {
+            console.log('WhatsApp webview loaded');
+        });
+        
+        webview.addEventListener('did-fail-load', (e) => {
+            console.error('Failed to load:', e);
+        });
+        
+        webview.addEventListener('did-start-loading', () => {
+            console.log('Started loading...');
+        });
+        
+        webview.addEventListener('did-stop-loading', () => {
+            console.log('Stopped loading');
+        });
+    </script>
+</body>
+</html>

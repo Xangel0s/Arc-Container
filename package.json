@@ -1,0 +1,57 @@
+{
+  "name": "my-app-container",
+  "version": "1.0.0",
+  "description": "Un contenedor de aplicaciones web sincronizable con Nextcloud",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --enable-logging",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "electron",
+    "webview",
+    "nextcloud",
+    "apps",
+    "container"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "build": {
+    "appId": "com.yourcompany.my-app-container",
+    "productName": "My App Container",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
+  },
+  "dependencies": {
+    "electron": "^37.2.4",
+    "electron-store": "^10.1.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^26.0.12"
+  }
+}
