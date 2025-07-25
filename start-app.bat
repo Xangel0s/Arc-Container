@@ -1,7 +1,7 @@
 @echo off
-cd /d "C:\Users\MC MOVILES\trend\my-app-container"
+cd /d "C:\Users\MC MOVILES\Nueva carpeta\Arc-Container"
 echo Directorio actual: %CD%
 echo.
-echo Iniciando My App Container...
+echo Iniciando Arc Container...
 npm start
 pause

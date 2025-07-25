@@ -10,6 +10,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getLastActiveService: () => ipcRenderer.invoke('get-last-active-service'),
     saveLastActiveService: (serviceId) => ipcRenderer.invoke('save-last-active-service', serviceId),
     
+    // Controles de ventana
+    minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
+    toggleMaximize: () => ipcRenderer.invoke('toggle-maximize'),
+    closeWindow: () => ipcRenderer.invoke('close-window'),
+    
     // Información del sistema
     platform: process.platform,
     

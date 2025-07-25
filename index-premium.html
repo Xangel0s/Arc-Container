@@ -42,7 +42,7 @@
 
         .app-container {
             display: flex;
-            height: 100vh;
+            height: calc(100vh - 32px); /* Restar altura de la barra de título */
         }
 
         /* ================ SIDEBAR ================ */
@@ -598,9 +598,107 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* ================ CUSTOM TITLE BAR ================ */
+        .custom-titlebar {
+            height: 32px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            -webkit-app-region: drag;
+            user-select: none;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .titlebar-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .titlebar-icon {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, var(--accent-blue), #5AC8FA);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+
+        .window-controls {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            -webkit-app-region: no-drag;
+        }
+
+        .window-control {
+            width: 46px;
+            height: 32px;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            font-size: 10px;
+        }
+
+        .window-control:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .window-control.minimize:hover {
+            background: #FFC107;
+            color: #000;
+        }
+
+        .window-control.maximize:hover {
+            background: #4CAF50;
+            color: #fff;
+        }
+
+        .window-control.close:hover {
+            background: #F44336;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
+    <!-- Custom Title Bar -->
+    <div class="custom-titlebar">
+        <div class="titlebar-title">
+            <div class="titlebar-icon">
+                <i class="fas fa-cube"></i>
+            </div>
+            Arc Container - Premium Edition
+        </div>
+        <div class="window-controls">
+            <button class="window-control minimize" onclick="minimizeWindow()">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button class="window-control maximize" onclick="toggleMaximize()">
+                <i class="fas fa-square"></i>
+            </button>
+            <button class="window-control close" onclick="closeWindow()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -804,6 +902,26 @@
     </div>
 
     <script>
+        // ================ WINDOW CONTROLS ================
+        function minimizeWindow() {
+            if (window.electronAPI && window.electronAPI.minimizeWindow) {
+                window.electronAPI.minimizeWindow();
+            }
+        }
+
+        function toggleMaximize() {
+            if (window.electronAPI && window.electronAPI.toggleMaximize) {
+                window.electronAPI.toggleMaximize();
+            }
+        }
+
+        function closeWindow() {
+            if (window.electronAPI && window.electronAPI.closeWindow) {
+                window.electronAPI.closeWindow();
+            }
+        }
+
+        // ================ APPLICATION CLASS ================
         class ArcContainerPremium {
             constructor() {
                 this.services = [

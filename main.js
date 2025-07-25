@@ -27,6 +27,13 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1400,
         height: 900,
+        minWidth: 1000,
+        minHeight: 700,
+        frame: false, // Remover marco por defecto para diseño personalizado
+        titleBarStyle: 'hidden', // Ocultar barra de título nativa
+        backgroundColor: '#0f0f0f', // Color de fondo oscuro
+        vibrancy: 'dark', // Efecto de transparencia (macOS)
+        transparent: false,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,
@@ -39,7 +46,10 @@ function createWindow() {
             partition: 'persist:main'
         },
         icon: path.join(__dirname, 'assets', 'icon.png'), // Opcional: agregar icono
-        show: false // No mostrar hasta que esté listo
+        show: false, // No mostrar hasta que esté listo
+        roundedCorners: true, // Esquinas redondeadas (Windows 11)
+        shadow: true, // Sombra de ventana
+        thickFrame: false // Marco delgado
     });
 
     // Cargar el archivo HTML principal
@@ -126,6 +136,29 @@ ipcMain.handle('save-last-active-service', (event, serviceId) => {
     return true;
 });
 
+// Manejadores para controles de ventana
+ipcMain.handle('minimize-window', () => {
+    if (mainWindow) {
+        mainWindow.minimize();
+    }
+});
+
+ipcMain.handle('toggle-maximize', () => {
+    if (mainWindow) {
+        if (mainWindow.isMaximized()) {
+            mainWindow.unmaximize();
+        } else {
+            mainWindow.maximize();
+        }
+    }
+});
+
+ipcMain.handle('close-window', () => {
+    if (mainWindow) {
+        mainWindow.close();
+    }
+});
+
 // Configuración por defecto
 function getDefaultConfig() {
     return {
@@ -134,7 +167,7 @@ function getDefaultConfig() {
                 id: "whatsapp",
                 name: "WhatsApp",
                 url: "https://web.whatsapp.com/",
-                icon: "WA",
+                icon: "fab fa-whatsapp",
                 backgroundColor: "#25D366",
                 enabled: true,
                 position: 1
@@ -143,7 +176,7 @@ function getDefaultConfig() {
                 id: "messenger",
                 name: "Messenger",
                 url: "https://www.messenger.com/",
-                icon: "MS",
+                icon: "fab fa-facebook-messenger",
                 backgroundColor: "#1877F2",
                 enabled: true,
                 position: 2
@@ -152,7 +185,7 @@ function getDefaultConfig() {
                 id: "telegram",
                 name: "Telegram",
                 url: "https://web.telegram.org/",
-                icon: "TG",
+                icon: "fab fa-telegram-plane",
                 backgroundColor: "#0088cc",
                 enabled: true,
                 position: 3
@@ -161,7 +194,7 @@ function getDefaultConfig() {
                 id: "discord",
                 name: "Discord",
                 url: "https://discord.com/app",
-                icon: "DC",
+                icon: "fab fa-discord",
                 backgroundColor: "#5865F2",
                 enabled: true,
                 position: 4
@@ -170,7 +203,7 @@ function getDefaultConfig() {
                 id: "gmail",
                 name: "Gmail",
                 url: "https://mail.google.com/mail/u/0/",
-                icon: "GM", 
+                icon: "fas fa-envelope", 
                 backgroundColor: "#EA4335",
                 enabled: true,
                 position: 5
@@ -179,7 +212,7 @@ function getDefaultConfig() {
                 id: "instagram",
                 name: "Instagram",
                 url: "https://www.instagram.com/direct/inbox/",
-                icon: "IG",
+                icon: "fab fa-instagram",
                 backgroundColor: "#E4405F",
                 enabled: true,
                 position: 6
@@ -188,8 +221,8 @@ function getDefaultConfig() {
                 id: "twitter",
                 name: "Twitter/X",
                 url: "https://twitter.com/",
-                icon: "X",
-                backgroundColor: "#000000",
+                icon: "fab fa-twitter",
+                backgroundColor: "#1DA1F2",
                 enabled: true,
                 position: 7
             },
@@ -197,7 +230,7 @@ function getDefaultConfig() {
                 id: "linkedin",
                 name: "LinkedIn",
                 url: "https://www.linkedin.com/messaging/",
-                icon: "LI",
+                icon: "fab fa-linkedin",
                 backgroundColor: "#0A66C2",
                 enabled: true,
                 position: 8
@@ -206,36 +239,36 @@ function getDefaultConfig() {
                 id: "slack",
                 name: "Slack",
                 url: "https://app.slack.com/",
-                icon: "SL",
+                icon: "fab fa-slack",
                 backgroundColor: "#4A154B",
-                enabled: false,
+                enabled: true,
                 position: 9
             },
             {
                 id: "teams",
                 name: "Microsoft Teams",
                 url: "https://teams.microsoft.com/",
-                icon: "MT",
+                icon: "fab fa-microsoft",
                 backgroundColor: "#6264A7",
-                enabled: false,
+                enabled: true,
                 position: 10
             },
             {
                 id: "notion",
                 name: "Notion",
                 url: "https://www.notion.so/",
-                icon: "NO",
+                icon: "fas fa-sticky-note",
                 backgroundColor: "#000000",
-                enabled: false,
+                enabled: true,
                 position: 11
             },
             {
                 id: "spotify",
                 name: "Spotify",
                 url: "https://open.spotify.com/",
-                icon: "SP",
+                icon: "fab fa-spotify",
                 backgroundColor: "#1DB954",
-                enabled: false,
+                enabled: true,
                 position: 12
             }
         ],
