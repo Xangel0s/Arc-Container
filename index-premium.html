@@ -939,6 +939,19 @@
             background: #F44336;
             color: #fff;
         }
+
+        /* Mejorar contraste del icono de WhatsApp Business en modo oscuro */
+        .business-icon {
+            background: #fff;
+            border-radius: 50%;
+            padding: 2px;
+            color: #075e54 !important;
+            box-shadow: 0 0 0 2px #075e54;
+        }
+        .app-icon-preview .business-icon {
+            color: #075e54 !important;
+            background: #fff;
+        }
     </style>
 </head>
 <body>
@@ -1254,6 +1267,35 @@
             <div class="modal-footer">
                 <button class="modal-button secondary" id="resetApps">Restablecer por defecto</button>
                 <button class="modal-button primary" id="saveApps">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit App Modal -->
+    <div class="modal-overlay" id="editAppModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-pen"></i>
+                    Editar Aplicación
+                </h2>
+                <button class="modal-close" id="closeEditAppModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editAppId">
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="editAppName" placeholder="Nombre de la aplicación">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <input type="color" id="editAppColor" value="#007AFF">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button primary" id="saveEditApp">Guardar</button>
             </div>
         </div>
     </div>
@@ -1908,7 +1950,7 @@
                     return;
                 }
 
-                console.log(`🔄 Resetting ${this.currentService} completely`);
+                console.log(`🔄 Resetting ${this.currentService} completamente`);
                 
                 // Remover webview existente
                 const existingWebview = this.webviews.get(this.currentService);
@@ -1971,7 +2013,7 @@
 
                     item.innerHTML = `
                         <div class="app-icon-preview" style="background-color: ${app.backgroundColor || '#007AFF'}">
-                            <i class="${app.icon}"></i>
+                            <i class="${app.icon}${app.id.includes('whatsapp-business') ? ' business-icon' : ''}"></i>
                         </div>
                         <div class="app-info">
                             <div class="app-name">${app.name}</div>
@@ -1981,6 +2023,9 @@
                             <div class="app-toggle ${app.enabled ? 'active' : ''}" data-app-id="${app.id}">
                                 <div class="app-toggle-handle"></div>
                             </div>
+                            <button class="app-action-btn edit" data-app-id="${app.id}" title="Editar">
+                                <i class="fas fa-pen"></i>
+                            </button>
                             ${!app.builtin ? `
                                 <button class="app-action-btn delete" data-app-id="${app.id}" title="Eliminar">
                                     <i class="fas fa-trash"></i>
@@ -2050,9 +2095,11 @@
 
                         if (e.target.closest('.app-toggle')) {
                             this.toggleApp(appId);
+                        } else if (e.target.closest('.app-action-btn.edit')) {
+                            this.openEditAppModal(appId);
                         } else if (e.target.closest('.app-action-btn.delete')) {
                             this.deleteApp(appId);
-                        } else if (e.target.closest('.app-action-btn:not(.delete)')) {
+                        } else if (e.target.closest('.app-action-btn:not(.delete):not(.edit)')) {
                             this.duplicateApp(appId);
                         }
                     });
@@ -2066,124 +2113,29 @@
                 });
             }
 
-            toggleApp(appId) {
+            openEditAppModal(appId) {
+                const app = this.services.find(s => s.id === appId);
+                if (!app) return;
+                // Rellenar campos
+                document.getElementById('editAppName').value = app.name;
+                document.getElementById('editAppColor').value = app.backgroundColor || '#007AFF';
+                document.getElementById('editAppId').value = app.id;
+                document.getElementById('editAppModal').classList.add('active');
+            }
+
+            saveEditApp() {
+                const appId = document.getElementById('editAppId').value;
+                const name = document.getElementById('editAppName').value.trim();
+                const color = document.getElementById('editAppColor').value;
                 const app = this.services.find(s => s.id === appId);
                 if (app) {
-                    app.enabled = !app.enabled;
-                    console.log(`🔄 Toggled ${app.name}: ${app.enabled ? 'enabled' : 'disabled'}`);
-                    
-                    // Actualizar UI
-                    const toggle = document.querySelector(`.app-toggle[data-app-id="${appId}"]`);
-                    const item = toggle.closest('.app-manager-item');
-                    
-                    if (app.enabled) {
-                        toggle.classList.add('active');
-                        item.classList.remove('disabled');
-                    } else {
-                        toggle.classList.remove('active');
-                        item.classList.add('disabled');
-                        
-                        // Si el servicio está activo actualmente, cambiar a home
-                        if (this.currentService === appId) {
-                            this.currentService = null;
-                            document.getElementById('welcomeView').style.display = 'flex';
-                            document.querySelectorAll('.webview-container').forEach(container => {
-                                container.classList.remove('active');
-                            });
-                        }
-                    }
-                }
-            }
-
-            deleteApp(appId) {
-                const app = this.services.find(s => s.id === appId);
-                if (app && !app.builtin) {
-                    const confirmed = confirm(`¿Estás seguro de que quieres eliminar "${app.name}"?`);
-                    if (confirmed) {
-                        this.services = this.services.filter(s => s.id !== appId);
-                        
-                        // Si el servicio está activo actualmente, cambiar a home
-                        if (this.currentService === appId) {
-                            this.currentService = null;
-                            document.getElementById('welcomeView').style.display = 'flex';
-                            document.querySelectorAll('.webview-container').forEach(container => {
-                                container.classList.remove('active');
-                            });
-                        }
-                        
-                        // Eliminar webview si existe
-                        if (this.webviews.has(appId)) {
-                            const container = document.getElementById(`container-${appId}`);
-                            if (container) {
-                                container.remove();
-                            }
-                            this.webviews.delete(appId);
-                        }
-                        
-                        this.renderAppManager();
-                        console.log(`🗑️ Deleted app: ${app.name}`);
-                    }
-                }
-            }
-
-            duplicateApp(appId) {
-                const originalApp = this.services.find(s => s.id === appId);
-                if (originalApp) {
-                    const newId = `${originalApp.id}-${this.nextAppId++}`;
-                    const duplicatedApp = {
-                        ...originalApp,
-                        id: newId,
-                        name: `${originalApp.name} (Copia)`,
-                        builtin: false,
-                        enabled: true
-                    };
-                    
-                    this.services.push(duplicatedApp);
+                    app.name = name;
+                    app.backgroundColor = color;
                     this.renderAppManager();
-                    console.log(`📋 Duplicated app: ${originalApp.name} -> ${duplicatedApp.name}`);
+                    this.renderServices();
+                    document.getElementById('editAppModal').classList.remove('active');
+                    this.saveAppsConfig();
                 }
-            }
-
-            addNewApp() {
-                const name = document.getElementById('newAppName').value.trim();
-                const url = document.getElementById('newAppUrl').value.trim();
-                const icon = document.getElementById('newAppIcon').value;
-                const backgroundColor = document.getElementById('newAppColor').value;
-
-                if (!name || !url) {
-                    alert('Por favor, completa el nombre y la URL de la aplicación.');
-                    return;
-                }
-
-                // Validar URL
-                try {
-                    new URL(url);
-                } catch (e) {
-                    alert('Por favor, ingresa una URL válida.');
-                    return;
-                }
-
-                const newApp = {
-                    id: `custom-${this.nextAppId++}`,
-                    name: name,
-                    url: url,
-                    icon: icon,
-                    backgroundColor: backgroundColor,
-                    enabled: true,
-                    builtin: false,
-                    notifications: 0
-                };
-
-                this.services.push(newApp);
-                this.renderAppManager();
-
-                // Limpiar formulario
-                document.getElementById('newAppName').value = '';
-                document.getElementById('newAppUrl').value = '';
-                document.getElementById('newAppIcon').value = 'fab fa-whatsapp';
-                document.getElementById('newAppColor').value = '#007AFF';
-
-                console.log(`➕ Added new app: ${newApp.name}`);
             }
 
             // Plantillas rápidas para aplicaciones comunes
@@ -2442,6 +2394,13 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             window.arcContainer = new ArcContainerPremium();
+            // Edit modal events
+            document.getElementById('saveEditApp').addEventListener('click', () => {
+                window.arcContainer.saveEditApp();
+            });
+            document.getElementById('closeEditAppModal').addEventListener('click', () => {
+                document.getElementById('editAppModal').classList.remove('active');
+            });
         });
     </script>
 
