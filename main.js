@@ -1,28 +1,20 @@
 const { app, BrowserWindow, ipcMain, Notification, nativeImage } = require('electron');
 const path = require('path');
 
-// Configurar argumentos de línea de comandos para evitar errores de cache
-app.commandLine.appendSwitch('--disable-web-security');
-app.commandLine.appendSwitch('--disable-features', 'VizDisplayCompositor');
-app.commandLine.appendSwitch('--ignore-certificate-errors');
-app.commandLine.appendSwitch('--ignore-ssl-errors');
-app.commandLine.appendSwitch('--ignore-certificate-errors-spki-list');
-app.commandLine.appendSwitch('--disable-gpu-sandbox');
+// Configuración EXACTA de Rambox Community (Electron 13.6.3) - CONFIGURACIÓN MÍNIMA QUE FUNCIONA
+// SOLO el switch crítico que usa Rambox para solucionar CSP
+app.commandLine.appendSwitch('--disable-features', 'CrossOriginOpenerPolicy');
 
-// Importar electron-store con ES6 import syntax
-let Store;
-let store;
+// Importar electron-store de forma compatible con Electron 13.x
+const Store = require('electron-store');
+const store = new Store();
+
+// Suprimir warnings de seguridad en desarrollo
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 // Configurar nombre de la aplicación
 app.setName('Arc Container');
 app.setAppUserModelId('com.arccontainer.app');
-
-// Función para inicializar store de forma asíncrona
-async function initStore() {
-    const { default: ElectronStore } = await import('electron-store');
-    Store = ElectronStore;
-    store = new Store();
-}
 
 let mainWindow;
 
@@ -39,15 +31,17 @@ function createWindow() {
         vibrancy: 'dark', // Efecto de transparencia (macOS)
         transparent: false,
         webPreferences: {
-            contextIsolation: true,
-            nodeIntegration: false,
-            webSecurity: false, // Deshabilitado temporalmente para debug
-            enableRemoteModule: false,
-            allowRunningInsecureContent: true,
-            experimentalFeatures: true,
-            webviewTag: true, // Habilitar webview tags
-            preload: path.join(__dirname, 'preload.js'),
-            partition: 'persist:main'
+            // Configuración EXACTA de Rambox Community - Solo lo esencial que funciona
+            enableRemoteModule: true, // Rambox usa true
+            plugins: true, // Rambox usa true - IMPORTANTE para WASM
+            partition: 'persist:arc-container', // Como Rambox usa persist:rambox
+            nodeIntegration: true, // Rambox usa true
+            webviewTag: true, // Rambox usa true
+            contextIsolation: false, // Rambox usa false
+            spellcheck: false // Rambox usa false
+            // SIN webSecurity: false - Rambox NO lo usa
+            // SIN allowRunningInsecureContent - Rambox NO lo usa  
+            // SIN experimentalFeatures - Rambox NO lo usa
         },
         icon: path.join(__dirname, 'assets', 'icon.png'), // Opcional: agregar icono
         show: false, // No mostrar hasta que esté listo
@@ -62,31 +56,95 @@ function createWindow() {
     // Mostrar ventana cuando esté lista
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
-        // Mostrar notificación de bienvenida
-        showWelcomeNotification();
+        console.log('🎉 Arc Container window ready and shown');
+        // Mostrar notificación de bienvenida después de un delay
+        setTimeout(showWelcomeNotification, 3000);
+    });
+
+    // Prevenir cierre accidental
+    mainWindow.on('close', (event) => {
+        console.log('🔄 Window close requested');
+        // En lugar de cerrar, minimizar a la bandeja (opcional)
+        // event.preventDefault();
+        // mainWindow.hide();
     });
 
     // Manejar cierre de ventana
     mainWindow.on('closed', () => {
+        console.log('❌ Window closed');
         mainWindow = null;
     });
 
-    // Configuración de seguridad para webviews simplificada para debug
+    // Configuración de webviews EXACTA de Rambox - Solo lo esencial
     mainWindow.webContents.on('will-attach-webview', (event, webPreferences, params) => {
         console.log('Creating webview for:', params.src);
         
-        // Configurar webPreferences para cada webview
-        webPreferences.nodeIntegration = false;
-        webPreferences.contextIsolation = true;
-        webPreferences.enableRemoteModule = false;
-        webPreferences.webSecurity = false; // Temporalmente false para debug
-        webPreferences.allowRunningInsecureContent = true;
+        // Configuración IDÉNTICA a Rambox que funciona sin errores CSP
+        // Solo configurar lo que Rambox configura - nada más
+        webPreferences.nodeIntegration = false; // Rambox usa false para webviews
+        webPreferences.plugins = true; // Rambox usa true - CRÍTICO para WASM
+        webPreferences.enableRemoteModule = true; // Rambox usa true
+        webPreferences.contextIsolation = false; // Rambox usa false
+        webPreferences.spellcheck = false; // Rambox usa false
+        // SIN webSecurity, allowRunningInsecureContent, etc. - Rambox NO los usa
         
-        // Configurar User Agent para simular Chrome más reciente
-        webPreferences.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+        // User Agent moderno para servicios que requieren Chrome reciente
+        if (params.src.includes('spotify')) {
+            // Spoofing más agresivo para Spotify - simular Chrome 120 completo
+            webPreferences.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+            webPreferences.webSecurity = false; // Deshabilitar para Spotify específicamente
+            webPreferences.experimentalFeatures = true; // Habilitar features experimentales
+            console.log('🎵 Spotify: Using AGGRESSIVE Chrome spoofing + webSecurity disabled');
+        } else if (params.src.includes('instagram')) {
+            webPreferences.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+            console.log('📷 Instagram: Using modern Chrome User Agent');
+        } else if (params.src.includes('discord')) {
+            webPreferences.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+            console.log('🎮 Discord: Using modern Chrome User Agent');
+        }
         
-        // Log para debug
-        console.log('Webview allowed:', params.src);
+        // Partición por servicio para mejor aislamiento (como Rambox)
+        // DETECCIÓN SIMPLIFICADA: Basada en partición
+        // El HTML ya asigna partition = `persist:${serviceId}`
+        const serviceIdFromPartition = params.partition ? params.partition.replace('persist:', '') : null;
+        const isWhatsAppBusiness = serviceIdFromPartition === 'whatsapp-business';
+        
+        console.log('🔍 Service detection:', { 
+            src: params.src, 
+            partition: params.partition, 
+            serviceId: serviceIdFromPartition,
+            isWhatsAppBusiness: isWhatsAppBusiness 
+        });
+        
+        const serviceId = serviceIdFromPartition || 
+                         (params.src.includes('web.whatsapp.com') ? 'whatsapp' : 
+                          params.src.includes('messenger') ? 'messenger' :
+                          params.src.includes('telegram') ? 'telegram' :
+                          params.src.includes('discord') ? 'discord' :
+                          params.src.includes('gmail') ? 'gmail' :
+                          params.src.includes('instagram') ? 'instagram' :
+                          params.src.includes('twitter') ? 'twitter' :
+                          params.src.includes('linkedin') ? 'linkedin' :
+                          params.src.includes('slack') ? 'slack' :
+                          params.src.includes('teams') ? 'teams' :
+                          params.src.includes('notion') ? 'notion' :
+                          params.src.includes('spotify') ? 'spotify' : 'default');
+        
+        webPreferences.partition = `persist:${serviceId}`;
+        
+        // User Agent específico para WhatsApp Business (como Rambox)
+        // IMPORTANTE: NO usar "WhatsAppBusiness" en el User Agent porque WhatsApp
+        // redirecciona automáticamente a business.whatsapp.com
+        if (isWhatsAppBusiness) {
+            // Usar el MISMO User Agent que WhatsApp normal para evitar redirección
+            webPreferences.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36';
+            console.log('🏢 WhatsApp Business: Using STANDARD User Agent to avoid business.whatsapp.com redirect');
+        } else if (params.src.includes('web.whatsapp.com')) {
+            webPreferences.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36';
+            console.log('💬 WhatsApp Personal: Using standard User Agent');
+        }
+        
+        console.log('Webview configured with EXACT Rambox settings for:', params.src);
     });
 
     // Manejar nuevas ventanas
@@ -101,8 +159,7 @@ function createWindow() {
 }
 
 // Eventos de la aplicación
-app.whenReady().then(async () => {
-    await initStore();
+app.whenReady().then(() => {
     createWindow();
 });
 
@@ -112,32 +169,27 @@ app.on('window-all-closed', () => {
     }
 });
 
-app.on('activate', async () => {
+app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-        if (!store) await initStore();
         createWindow();
     }
 });
 
 // IPC handlers para comunicación con el renderer
 ipcMain.handle('get-config', () => {
-    if (!store) return getDefaultConfig();
     return store.get('appConfig', getDefaultConfig());
 });
 
 ipcMain.handle('save-config', (event, config) => {
-    if (!store) return false;
     store.set('appConfig', config);
     return true;
 });
 
 ipcMain.handle('get-last-active-service', () => {
-    if (!store) return 'whatsapp';
     return store.get('lastActiveService', 'whatsapp');
 });
 
 ipcMain.handle('save-last-active-service', (event, serviceId) => {
-    if (!store) return false;
     store.set('lastActiveService', serviceId);
     return true;
 });
@@ -339,7 +391,7 @@ function getDefaultConfig() {
             {
                 id: "spotify",
                 name: "Spotify",
-                url: "https://open.spotify.com/",
+                url: "https://open.spotify.com/?_gl=1",
                 icon: "fab fa-spotify",
                 backgroundColor: "#1DB954",
                 enabled: true,

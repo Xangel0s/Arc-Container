@@ -322,41 +322,6 @@
             line-height: 1.5;
         }
 
-        /* Loading */
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 16px;
-            z-index: 10;
-        }
-
-        .loading-spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid var(--bg-tertiary);
-            border-top: 3px solid var(--accent-blue);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
         /* Modal */
         .modal-overlay {
             position: fixed;
@@ -573,6 +538,190 @@
 
         .modal-button.primary:hover {
             background: #0056cc;
+        }
+
+        /* App Manager Styles */
+        .apps-manager-list {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .app-manager-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .app-manager-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-blue);
+        }
+
+        .app-manager-item.disabled {
+            opacity: 0.5;
+        }
+
+        .app-icon-preview {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: white;
+            font-size: 16px;
+        }
+
+        .app-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .app-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .app-url {
+            font-size: 12px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .app-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-toggle {
+            width: 40px;
+            height: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .app-toggle.active {
+            background: var(--accent-blue);
+        }
+
+        .app-toggle-handle {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: var(--transition);
+        }
+
+        .app-toggle.active .app-toggle-handle {
+            transform: translateX(20px);
+        }
+
+        .app-action-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 12px;
+        }
+
+        .app-action-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .app-action-btn.delete:hover {
+            background: #ff4757;
+            color: white;
+        }
+
+        .add-app-section {
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .add-app-section h3 {
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-app-form {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: var(--bg-primary);
+        }
+
+        .form-group input[type="color"] {
+            width: 100%;
+            height: 38px;
+            padding: 2px;
+            cursor: pointer;
         }
 
         /* Service Colors */
@@ -845,8 +994,14 @@
                     <button class="control-button" id="reloadBtn" title="Recargar">
                         <i class="fas fa-redo"></i>
                     </button>
+                    <button class="control-button" id="resetBtn" title="Resetear servicio">
+                        <i class="fas fa-refresh"></i>
+                    </button>
                     <button class="control-button" id="devToolsBtn" title="DevTools">
                         <i class="fas fa-code"></i>
+                    </button>
+                    <button class="control-button" id="appManagerBtn" title="Administrar Aplicaciones">
+                        <i class="fas fa-th-large"></i>
                     </button>
                     <button class="control-button" id="settingsBtn" title="Configuración">
                         <i class="fas fa-cog"></i>
@@ -868,11 +1023,7 @@
                     </p>
                 </div>
 
-                <!-- Loading Overlay -->
-                <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-                    <div class="loading-spinner"></div>
-                    <div class="loading-text">Cargando servicio...</div>
-                </div>
+                <!-- Loading eliminado para mejor rendimiento -->
 
                 <!-- Webviews will be inserted here -->
             </div>
@@ -1016,118 +1167,254 @@
         </div>
     </div>
 
+    <!-- App Manager Modal -->
+    <div class="modal-overlay" id="appManagerModal">
+        <div class="modal-content" style="max-width: 800px; max-height: 80vh;">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-th-large"></i>
+                    Administrar Aplicaciones
+                </h2>
+                <button class="modal-close" id="closeAppManagerModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body" style="max-height: 50vh; overflow-y: auto;">
+                <!-- Apps List -->
+                <div id="appsManagerList" class="apps-manager-list">
+                    <!-- Lista generada dinámicamente -->
+                </div>
+                
+                <!-- Add New App Section -->
+                <div class="add-app-section">
+                    <h3><i class="fas fa-plus-circle"></i> Agregar Nueva Aplicación</h3>
+                    
+                    <!-- Quick Templates -->
+                    <div class="quick-templates" style="margin-bottom: 16px;">
+                        <h4 style="font-size: 14px; color: var(--text-primary); margin-bottom: 8px;">
+                            <i class="fas fa-magic"></i> Plantillas Rápidas
+                        </h4>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="modal-button secondary" style="font-size: 12px; padding: 6px 12px;" onclick="window.arcContainer.addQuickTemplate('whatsapp')">
+                                <i class="fab fa-whatsapp"></i> WhatsApp Personal
+                            </button>
+                            <button class="modal-button secondary" style="font-size: 12px; padding: 6px 12px;" onclick="window.arcContainer.addQuickTemplate('whatsapp-business')">
+                                <i class="fab fa-whatsapp"></i> WhatsApp Business
+                            </button>
+                            <button class="modal-button secondary" style="font-size: 12px; padding: 6px 12px;" onclick="window.arcContainer.addQuickTemplate('messenger')">
+                                <i class="fab fa-facebook-messenger"></i> Messenger
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="add-app-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nombre</label>
+                                <input type="text" id="newAppName" placeholder="Ej: WhatsApp Personal">
+                            </div>
+                            <div class="form-group">
+                                <label>URL</label>
+                                <input type="text" id="newAppUrl" placeholder="https://web.whatsapp.com/">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Icono</label>
+                                <select id="newAppIcon">
+                                    <option value="fab fa-whatsapp">WhatsApp</option>
+                                    <option value="fab fa-whatsapp">WhatsApp Business</option>
+                                    <option value="fab fa-facebook-messenger">Messenger</option>
+                                    <option value="fab fa-telegram-plane">Telegram</option>
+                                    <option value="fab fa-discord">Discord</option>
+                                    <option value="fas fa-envelope">Gmail</option>
+                                    <option value="fab fa-instagram">Instagram</option>
+                                    <option value="fab fa-twitter">Twitter</option>
+                                    <option value="fab fa-linkedin">LinkedIn</option>
+                                    <option value="fab fa-slack">Slack</option>
+                                    <option value="fab fa-microsoft">Teams</option>
+                                    <option value="fas fa-sticky-note">Notion</option>
+                                    <option value="fab fa-spotify">Spotify</option>
+                                    <option value="fas fa-globe">Genérico</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Color</label>
+                                <input type="color" id="newAppColor" value="#007AFF">
+                            </div>
+                        </div>
+                        <button class="modal-button primary" id="addNewApp">
+                            <i class="fas fa-plus"></i> Agregar Aplicación
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-button secondary" id="resetApps">Restablecer por defecto</button>
+                <button class="modal-button primary" id="saveApps">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ================ WINDOW CONTROLS ================
         function minimizeWindow() {
-            if (window.electronAPI && window.electronAPI.minimizeWindow) {
-                window.electronAPI.minimizeWindow();
-            }
+            const { ipcRenderer } = require('electron');
+            ipcRenderer.invoke('minimize-window');
         }
 
         function toggleMaximize() {
-            if (window.electronAPI && window.electronAPI.toggleMaximize) {
-                window.electronAPI.toggleMaximize();
-            }
+            const { ipcRenderer } = require('electron');
+            ipcRenderer.invoke('toggle-maximize');
         }
 
         function closeWindow() {
-            if (window.electronAPI && window.electronAPI.closeWindow) {
-                window.electronAPI.closeWindow();
-            }
+            const { ipcRenderer } = require('electron');
+            ipcRenderer.invoke('close-window');
         }
 
         // ================ APPLICATION CLASS ================
         class ArcContainerPremium {
             constructor() {
-                this.services = [
+                // Configuración predefinida de aplicaciones
+                this.defaultApps = [
                     {
                         id: 'whatsapp',
                         name: 'WhatsApp',
                         url: 'https://web.whatsapp.com/',
                         icon: 'fab fa-whatsapp',
-                        notifications: 0
+                        backgroundColor: '#25D366',
+                        enabled: true,
+                        builtin: true
+                    },
+                    {
+                        id: 'whatsapp-business',
+                        name: 'WhatsApp Business',
+                        url: 'https://web.whatsapp.com/',
+                        icon: 'fab fa-whatsapp',
+                        backgroundColor: '#075e54',
+                        enabled: true,
+                        builtin: true
+                    },
+                    {
+                        id: 'facebook',
+                        name: 'Facebook',
+                        url: 'https://www.facebook.com/',
+                        icon: 'fab fa-facebook',
+                        backgroundColor: '#1877F2',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'messenger',
                         name: 'Messenger',
                         url: 'https://www.messenger.com/',
                         icon: 'fab fa-facebook-messenger',
-                        notifications: 0
+                        backgroundColor: '#0084FF',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'telegram',
                         name: 'Telegram',
                         url: 'https://web.telegram.org/',
                         icon: 'fab fa-telegram-plane',
-                        notifications: 0
+                        backgroundColor: '#0088CC',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'discord',
                         name: 'Discord',
                         url: 'https://discord.com/app',
                         icon: 'fab fa-discord',
-                        notifications: 0
+                        backgroundColor: '#5865F2',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'gmail',
                         name: 'Gmail',
                         url: 'https://mail.google.com/mail/u/0/',
                         icon: 'fas fa-envelope',
-                        notifications: 0
+                        backgroundColor: '#EA4335',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'instagram',
                         name: 'Instagram',
                         url: 'https://www.instagram.com/direct/inbox/',
                         icon: 'fab fa-instagram',
-                        notifications: 0
+                        backgroundColor: '#E4405F',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'twitter',
                         name: 'Twitter',
                         url: 'https://twitter.com/',
                         icon: 'fab fa-twitter',
-                        notifications: 0
+                        backgroundColor: '#1DA1F2',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'linkedin',
                         name: 'LinkedIn',
                         url: 'https://www.linkedin.com/messaging/',
                         icon: 'fab fa-linkedin',
-                        notifications: 0
+                        backgroundColor: '#0077B5',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'slack',
                         name: 'Slack',
                         url: 'https://app.slack.com/',
                         icon: 'fab fa-slack',
-                        notifications: 0
+                        backgroundColor: '#4A154B',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'teams',
                         name: 'Teams',
                         url: 'https://teams.microsoft.com/',
                         icon: 'fab fa-microsoft',
-                        notifications: 0
+                        backgroundColor: '#6264A7',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'notion',
                         name: 'Notion',
                         url: 'https://www.notion.so/',
                         icon: 'fas fa-sticky-note',
-                        notifications: 0
+                        backgroundColor: '#000000',
+                        enabled: false,
+                        builtin: true
                     },
                     {
                         id: 'spotify',
                         name: 'Spotify',
                         url: 'https://open.spotify.com/',
                         icon: 'fab fa-spotify',
-                        notifications: 0
+                        backgroundColor: '#1DB954',
+                        enabled: false,
+                        builtin: true
                     }
                 ];
+
+                // Cargar configuración de aplicaciones o usar la predefinida
+                this.loadAppsConfig();
                 
                 this.currentService = null;
                 this.webviews = new Map();
+                this.switchingService = false;
+                this.nextAppId = Date.now(); // Para IDs únicos de nuevas apps
                 this.settings = {
                     theme: 'dark',
                     startMinimized: false,
@@ -1143,24 +1430,72 @@
                 this.init();
             }
 
+            // ================ CONFIGURACIÓN DE APLICACIONES ================
+            loadAppsConfig() {
+                try {
+                    const saved = localStorage.getItem('arc-container-apps');
+                    if (saved) {
+                        this.services = JSON.parse(saved);
+                        console.log('📁 Apps configuration loaded from storage');
+                    } else {
+                        this.services = this.defaultApps.map(app => ({
+                            ...app,
+                            notifications: 0
+                        }));
+                        this.saveAppsConfig();
+                        console.log('🆕 Using default apps configuration');
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading apps config:', error);
+                    this.services = this.defaultApps.map(app => ({
+                        ...app,
+                        notifications: 0
+                    }));
+                    this.saveAppsConfig();
+                }
+            }
+
+            saveAppsConfig() {
+                try {
+                    localStorage.setItem('arc-container-apps', JSON.stringify(this.services));
+                    console.log('💾 Apps configuration saved');
+                } catch (error) {
+                    console.error('❌ Error saving apps config:', error);
+                }
+            }
+
+            getEnabledServices() {
+                return this.services.filter(service => service.enabled);
+            }
+
             init() {
                 console.log('🚀 Initializing Arc Container Premium...');
                 this.renderServices();
-                this.createWebviews();
+                // NO crear todos los webviews al inicio - LAZY LOADING
                 this.setupEventListeners();
                 this.setupModal();
                 this.loadSettings();
-                this.simulateNotifications();
+                // Demostración diferida para mejor rendimiento
+                setTimeout(() => this.simulateNotifications(), 5000);
                 console.log('✅ Arc Container Premium ready');
             }
 
             renderServices() {
                 const container = document.getElementById('servicesContainer');
+                container.innerHTML = ''; // Limpiar contenedor
                 
-                this.services.forEach(service => {
+                // Solo renderizar servicios habilitados
+                const enabledServices = this.getEnabledServices();
+                
+                enabledServices.forEach(service => {
                     const item = document.createElement('div');
                     item.className = `service-item service-${service.id}`;
                     item.setAttribute('data-service', service.id);
+                    
+                    // Aplicar color personalizado si existe
+                    if (service.backgroundColor) {
+                        item.style.setProperty('--service-color', service.backgroundColor);
+                    }
                     
                     item.innerHTML = `
                         <i class="service-icon ${service.icon}"></i>
@@ -1174,67 +1509,118 @@
                     
                     container.appendChild(item);
                 });
+                
+                console.log(`📱 Rendered ${enabledServices.length} enabled services`);
+            }
+
+            // Crear webview de forma lazy (solo cuando se necesite) - con protección contra duplicados
+            createWebviewLazy(serviceId) {
+                // Verificar primero si ya existe
+                if (this.webviews.has(serviceId)) {
+                    console.log(`✅ Webview for ${serviceId} already exists, returning existing`);
+                    return this.webviews.get(serviceId);
+                }
+
+                // Verificar si ya existe un contenedor para evitar duplicados
+                const existingContainer = document.getElementById(`container-${serviceId}`);
+                if (existingContainer) {
+                    console.warn(`⚠️ Container for ${serviceId} already exists, cleaning up...`);
+                    existingContainer.remove();
+                }
+
+                const service = this.services.find(s => s.id === serviceId);
+                if (!service) {
+                    console.error(`❌ Service not found: ${serviceId}`);
+                    return null;
+                }
+
+                console.log(`🚀 Creating lazy webview for ${service.name}`);
+                
+                const container = document.getElementById('contentView');
+                const webviewContainer = document.createElement('div');
+                webviewContainer.className = 'webview-container';
+                webviewContainer.id = `container-${serviceId}`;
+                
+                const webview = document.createElement('webview');
+                webview.id = `webview-${serviceId}`;
+                // NO CARGAR URL INMEDIATAMENTE - se cargará en switchToService
+                webview.partition = `persist:${serviceId}`;
+                webview.allowpopups = true;
+                // User Agent más específico para cada servicio
+                webview.useragent = this.getUserAgentForService(serviceId);
+                
+                this.setupWebviewEvents(webview, service);
+                
+                webviewContainer.appendChild(webview);
+                container.appendChild(webviewContainer);
+                
+                // Almacenar inmediatamente para evitar duplicados
+                this.webviews.set(serviceId, webview);
+                console.log(`✅ Webview for ${service.name} created and stored`);
+                return webview;
             }
 
             createWebviews() {
-                const container = document.getElementById('contentView');
-                
-                this.services.forEach(service => {
-                    const webviewContainer = document.createElement('div');
-                    webviewContainer.className = 'webview-container';
-                    webviewContainer.id = `container-${service.id}`;
-                    
-                    const webview = document.createElement('webview');
-                    webview.id = `webview-${service.id}`;
-                    webview.src = service.url;
-                    webview.partition = `persist:${service.id}`;
-                    webview.allowpopups = true;
-                    webview.useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-                    
-                    this.setupWebviewEvents(webview, service);
-                    
-                    webviewContainer.appendChild(webview);
-                    container.appendChild(webviewContainer);
-                    
-                    this.webviews.set(service.id, webview);
-                });
+                // Método obsoleto - ahora usamos lazy loading
+                console.log('⚠️ Using lazy loading instead of creating all webviews at startup');
+            }
+
+            // Obtener User-Agent específico por servicio para mejor compatibilidad
+            getUserAgentForService(serviceId) {
+                const userAgents = {
+                    'whatsapp': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36',
+                    'whatsapp-business': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36',
+                    'messenger': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+                    'telegram': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+                    'discord': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Discord/1.0',
+                    'gmail': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+                    'instagram': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+                    'twitter': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+                    'linkedin': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+                    'slack': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Slack/4.0',
+                    'teams': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Teams/1.0',
+                    'notion': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+                    'spotify': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+                };
+                return userAgents[serviceId] || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36';
             }
 
             setupWebviewEvents(webview, service) {
+                // Eventos simplificados sin animaciones complejas
                 webview.addEventListener('loadstart', () => {
                     console.log(`🔄 ${service.name}: Loading...`);
-                    if (this.currentService === service.id) {
-                        this.showLoading(`Cargando ${service.name}...`);
-                    }
                 });
                 
                 webview.addEventListener('loadstop', () => {
-                    console.log(`✅ ${service.name}: Loaded`);
-                    this.hideLoading();
+                    console.log(`✅ ${service.name}: Loaded successfully`);
                 });
                 
                 webview.addEventListener('dom-ready', () => {
                     console.log(`🎯 ${service.name}: DOM Ready`);
                     
-                    // Inyectar estilos personalizados para mejorar la apariencia
-                    if (service.id === 'whatsapp') {
-                        webview.insertCSS(`
-                            body { 
-                                background: #0f0f0f !important; 
-                            }
-                            ._2dloQ, .landing-wrapper {
-                                background: #1a1a1a !important;
-                            }
-                            ._3WByx {
-                                background: #0f0f0f !important;
-                            }
-                        `);
+                    // Inyectar estilos básicos solo si es necesario
+                    try {
+                        if (service.id === 'whatsapp') {
+                            webview.insertCSS(`
+                                body { 
+                                    background: #0f0f0f !important; 
+                                }
+                            `);
+                        }
+                    } catch (error) {
+                        console.warn(`⚠️ Could not inject CSS for ${service.name}:`, error);
                     }
                 });
                 
                 webview.addEventListener('did-fail-load', (e) => {
                     console.error(`❌ ${service.name}: Load failed`, e.errorDescription);
-                    this.hideLoading();
+                });
+                
+                // Errores de consola básicos
+                webview.addEventListener('console-message', (e) => {
+                    if (e.level === 3) { // Error level
+                        console.error(`🚨 ${service.name} Console Error:`, e.message);
+                    }
                 });
             }
 
@@ -1243,8 +1629,16 @@
                     this.reloadCurrentService();
                 });
 
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    this.resetCurrentService();
+                });
+
                 document.getElementById('devToolsBtn').addEventListener('click', () => {
                     this.openDevTools();
+                });
+
+                document.getElementById('appManagerBtn').addEventListener('click', () => {
+                    this.openAppManager();
                 });
 
                 document.getElementById('settingsBtn').addEventListener('click', () => {
@@ -1358,16 +1752,59 @@
             }
 
             switchToService(serviceId) {
-                const service = this.services.find(s => s.id === serviceId);
-                if (!service) return;
+                // Protección contra llamadas múltiples rápidas
+                if (this.switchingService) {
+                    console.log(`⚠️ Already switching to a service, ignoring duplicate call`);
+                    return;
+                }
+                this.switchingService = true;
 
-                console.log(`🔄 Switching to ${service.name}`);
+                const service = this.services.find(s => s.id === serviceId);
+                if (!service) {
+                    console.error(`❌ Service not found: ${serviceId}`);
+                    this.switchingService = false;
+                    return;
+                }
+
+                console.log(`🔄 Switching to ${service.name} (${service.url})`);
+
+                // Crear webview si no existe (lazy loading)
+                let webview = this.webviews.get(serviceId);
+                if (!webview) {
+                    console.log(`🆕 Creating new webview for ${service.name}`);
+                    webview = this.createWebviewLazy(serviceId);
+                    if (!webview) {
+                        console.error(`❌ Failed to create webview for ${serviceId}`);
+                        this.switchingService = false;
+                        return;
+                    }
+                }
+
+                // Verificar si la webview ya tiene contenido cargado
+                const hasContent = webview.src && webview.src !== 'about:blank' && webview.src !== '';
+                console.log(`📊 Webview status for ${service.name}: src="${webview.src}", hasContent=${hasContent}`);
+
+                // Cargar URL solo si no se ha cargado antes
+                if (!hasContent) {
+                    console.log(`📥 Loading ${service.name} for the first time: ${service.url}`);
+                    
+                    // Cargar inmediatamente sin delays ni animaciones
+                    webview.src = service.url;
+                    console.log(`🌐 URL set to: ${webview.src}`);
+                    this.switchingService = false;
+                } else {
+                    console.log(`✅ ${service.name} already loaded, switching view only`);
+                    this.switchingService = false;
+                }
 
                 // Update active states
                 document.querySelectorAll('.service-item').forEach(item => {
                     item.classList.remove('active');
                 });
-                document.querySelector(`[data-service="${serviceId}"]`).classList.add('active');
+                const serviceElement = document.querySelector(`[data-service="${serviceId}"]`);
+                if (serviceElement) {
+                    serviceElement.classList.add('active');
+                }
 
                 // Hide welcome screen
                 document.getElementById('welcomeView').style.display = 'none';
@@ -1376,7 +1813,14 @@
                 document.querySelectorAll('.webview-container').forEach(container => {
                     container.classList.remove('active');
                 });
-                document.getElementById(`container-${serviceId}`).classList.add('active');
+                
+                const containerElement = document.getElementById(`container-${serviceId}`);
+                if (containerElement) {
+                    containerElement.classList.add('active');
+                    console.log(`✅ Container ${serviceId} now active`);
+                } else {
+                    console.error(`❌ Container element not found: container-${serviceId}`);
+                }
 
                 // Update header
                 this.updateServiceInfo(service);
@@ -1410,6 +1854,12 @@
             updateServiceBadge(serviceId) {
                 const service = this.services.find(s => s.id === serviceId);
                 const serviceItem = document.querySelector(`[data-service="${serviceId}"]`);
+                
+                if (!serviceItem) {
+                    console.warn(`Service item not found for: ${serviceId}`);
+                    return;
+                }
+                
                 const existingBadge = serviceItem.querySelector('.service-badge');
                 
                 if (service.notifications > 0) {
@@ -1427,22 +1877,64 @@
             }
 
             showLoading(text = 'Cargando...') {
-                const overlay = document.getElementById('loadingOverlay');
-                const loadingText = overlay.querySelector('.loading-text');
-                loadingText.textContent = text;
-                overlay.style.display = 'flex';
+                // Función simplificada - solo log, sin UI
+                console.log(`🔄 ${text}`);
             }
 
             hideLoading() {
-                document.getElementById('loadingOverlay').style.display = 'none';
+                // Función simplificada - solo log, sin UI
+                console.log('✅ Loading finished');
             }
 
             reloadCurrentService() {
-                if (!this.currentService) return;
+                if (!this.currentService) {
+                    console.warn('⚠️ No current service to reload');
+                    return;
+                }
+                
                 const webview = this.webviews.get(this.currentService);
                 if (webview) {
                     console.log(`🔄 Reloading ${this.currentService}`);
                     webview.reload();
+                } else {
+                    console.error(`❌ Webview not found for service: ${this.currentService}`);
+                }
+            }
+
+            // Nuevo método para resetear completamente una webview problemática
+            resetCurrentService() {
+                if (!this.currentService) {
+                    console.warn('⚠️ No current service to reset');
+                    return;
+                }
+
+                console.log(`🔄 Resetting ${this.currentService} completely`);
+                
+                // Remover webview existente
+                const existingWebview = this.webviews.get(this.currentService);
+                if (existingWebview) {
+                    const container = existingWebview.parentNode;
+                    if (container && container.parentNode) {
+                        container.parentNode.removeChild(container);
+                    }
+                    this.webviews.delete(this.currentService);
+                }
+
+                // Recrear webview
+                const service = this.services.find(s => s.id === this.currentService);
+                if (service) {
+                    console.log(`🔄 Recreating ${service.name}...`);
+                    const newWebview = this.createWebviewLazy(this.currentService);
+                    if (newWebview) {
+                        // Cargar inmediatamente sin delays
+                        newWebview.src = service.url;
+                        
+                        // Activar el contenedor
+                        const containerElement = document.getElementById(`container-${this.currentService}`);
+                        if (containerElement) {
+                            containerElement.classList.add('active');
+                        }
+                    }
                 }
             }
 
@@ -1458,6 +1950,307 @@
             openSettings() {
                 console.log('⚙️ Opening settings...');
                 document.getElementById('settingsModal').classList.add('active');
+            }
+
+            // ================ ADMINISTRADOR DE APLICACIONES ================
+            openAppManager() {
+                console.log('📱 Opening app manager...');
+                this.renderAppManager();
+                document.getElementById('appManagerModal').classList.add('active');
+                this.setupAppManagerEvents();
+            }
+
+            renderAppManager() {
+                const container = document.getElementById('appsManagerList');
+                container.innerHTML = '';
+
+                this.services.forEach(app => {
+                    const item = document.createElement('div');
+                    item.className = `app-manager-item ${!app.enabled ? 'disabled' : ''}`;
+                    item.setAttribute('data-app-id', app.id);
+
+                    item.innerHTML = `
+                        <div class="app-icon-preview" style="background-color: ${app.backgroundColor || '#007AFF'}">
+                            <i class="${app.icon}"></i>
+                        </div>
+                        <div class="app-info">
+                            <div class="app-name">${app.name}</div>
+                            <div class="app-url">${app.url}</div>
+                        </div>
+                        <div class="app-controls">
+                            <div class="app-toggle ${app.enabled ? 'active' : ''}" data-app-id="${app.id}">
+                                <div class="app-toggle-handle"></div>
+                            </div>
+                            ${!app.builtin ? `
+                                <button class="app-action-btn delete" data-app-id="${app.id}" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : ''}
+                            <button class="app-action-btn" data-app-id="${app.id}" title="Duplicar">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    container.appendChild(item);
+                });
+            }
+
+            setupAppManagerEvents() {
+                // Limpiar eventos anteriores para evitar duplicados
+                const modal = document.getElementById('appManagerModal');
+                const closeBtn = document.getElementById('closeAppManagerModal');
+                const saveBtn = document.getElementById('saveApps');
+                const resetBtn = document.getElementById('resetApps');
+                const addBtn = document.getElementById('addNewApp');
+
+                // Remover listeners anteriores clonando elementos
+                if (closeBtn) {
+                    const newCloseBtn = closeBtn.cloneNode(true);
+                    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+                    newCloseBtn.addEventListener('click', () => {
+                        this.closeAppManagerModal();
+                    });
+                }
+
+                if (saveBtn) {
+                    const newSaveBtn = saveBtn.cloneNode(true);
+                    saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+                    newSaveBtn.addEventListener('click', () => {
+                        this.saveAppsAndReload();
+                    });
+                }
+
+                if (resetBtn) {
+                    const newResetBtn = resetBtn.cloneNode(true);
+                    resetBtn.parentNode.replaceChild(newResetBtn, resetBtn);
+                    newResetBtn.addEventListener('click', () => {
+                        this.resetToDefaultApps();
+                    });
+                }
+
+                if (addBtn) {
+                    const newAddBtn = addBtn.cloneNode(true);
+                    addBtn.parentNode.replaceChild(newAddBtn, addBtn);
+                    newAddBtn.addEventListener('click', () => {
+                        this.addNewApp();
+                    });
+                }
+
+                // Delegación de eventos para los elementos dinámicos
+                const container = document.getElementById('appsManagerList');
+                if (container) {
+                    // Remover listener anterior
+                    const newContainer = container.cloneNode(true);
+                    container.parentNode.replaceChild(newContainer, container);
+                    
+                    newContainer.addEventListener('click', (e) => {
+                        const appId = e.target.closest('[data-app-id]')?.getAttribute('data-app-id');
+                        if (!appId) return;
+
+                        if (e.target.closest('.app-toggle')) {
+                            this.toggleApp(appId);
+                        } else if (e.target.closest('.app-action-btn.delete')) {
+                            this.deleteApp(appId);
+                        } else if (e.target.closest('.app-action-btn:not(.delete)')) {
+                            this.duplicateApp(appId);
+                        }
+                    });
+                }
+
+                // Cerrar modal al hacer click fuera
+                modal.addEventListener('click', (e) => {
+                    if (e.target.id === 'appManagerModal') {
+                        this.closeAppManagerModal();
+                    }
+                });
+            }
+
+            toggleApp(appId) {
+                const app = this.services.find(s => s.id === appId);
+                if (app) {
+                    app.enabled = !app.enabled;
+                    console.log(`🔄 Toggled ${app.name}: ${app.enabled ? 'enabled' : 'disabled'}`);
+                    
+                    // Actualizar UI
+                    const toggle = document.querySelector(`.app-toggle[data-app-id="${appId}"]`);
+                    const item = toggle.closest('.app-manager-item');
+                    
+                    if (app.enabled) {
+                        toggle.classList.add('active');
+                        item.classList.remove('disabled');
+                    } else {
+                        toggle.classList.remove('active');
+                        item.classList.add('disabled');
+                        
+                        // Si el servicio está activo actualmente, cambiar a home
+                        if (this.currentService === appId) {
+                            this.currentService = null;
+                            document.getElementById('welcomeView').style.display = 'flex';
+                            document.querySelectorAll('.webview-container').forEach(container => {
+                                container.classList.remove('active');
+                            });
+                        }
+                    }
+                }
+            }
+
+            deleteApp(appId) {
+                const app = this.services.find(s => s.id === appId);
+                if (app && !app.builtin) {
+                    const confirmed = confirm(`¿Estás seguro de que quieres eliminar "${app.name}"?`);
+                    if (confirmed) {
+                        this.services = this.services.filter(s => s.id !== appId);
+                        
+                        // Si el servicio está activo actualmente, cambiar a home
+                        if (this.currentService === appId) {
+                            this.currentService = null;
+                            document.getElementById('welcomeView').style.display = 'flex';
+                            document.querySelectorAll('.webview-container').forEach(container => {
+                                container.classList.remove('active');
+                            });
+                        }
+                        
+                        // Eliminar webview si existe
+                        if (this.webviews.has(appId)) {
+                            const container = document.getElementById(`container-${appId}`);
+                            if (container) {
+                                container.remove();
+                            }
+                            this.webviews.delete(appId);
+                        }
+                        
+                        this.renderAppManager();
+                        console.log(`🗑️ Deleted app: ${app.name}`);
+                    }
+                }
+            }
+
+            duplicateApp(appId) {
+                const originalApp = this.services.find(s => s.id === appId);
+                if (originalApp) {
+                    const newId = `${originalApp.id}-${this.nextAppId++}`;
+                    const duplicatedApp = {
+                        ...originalApp,
+                        id: newId,
+                        name: `${originalApp.name} (Copia)`,
+                        builtin: false,
+                        enabled: true
+                    };
+                    
+                    this.services.push(duplicatedApp);
+                    this.renderAppManager();
+                    console.log(`📋 Duplicated app: ${originalApp.name} -> ${duplicatedApp.name}`);
+                }
+            }
+
+            addNewApp() {
+                const name = document.getElementById('newAppName').value.trim();
+                const url = document.getElementById('newAppUrl').value.trim();
+                const icon = document.getElementById('newAppIcon').value;
+                const backgroundColor = document.getElementById('newAppColor').value;
+
+                if (!name || !url) {
+                    alert('Por favor, completa el nombre y la URL de la aplicación.');
+                    return;
+                }
+
+                // Validar URL
+                try {
+                    new URL(url);
+                } catch (e) {
+                    alert('Por favor, ingresa una URL válida.');
+                    return;
+                }
+
+                const newApp = {
+                    id: `custom-${this.nextAppId++}`,
+                    name: name,
+                    url: url,
+                    icon: icon,
+                    backgroundColor: backgroundColor,
+                    enabled: true,
+                    builtin: false,
+                    notifications: 0
+                };
+
+                this.services.push(newApp);
+                this.renderAppManager();
+
+                // Limpiar formulario
+                document.getElementById('newAppName').value = '';
+                document.getElementById('newAppUrl').value = '';
+                document.getElementById('newAppIcon').value = 'fab fa-whatsapp';
+                document.getElementById('newAppColor').value = '#007AFF';
+
+                console.log(`➕ Added new app: ${newApp.name}`);
+            }
+
+            // Plantillas rápidas para aplicaciones comunes
+            addQuickTemplate(type) {
+                const templates = {
+                    'whatsapp': {
+                        name: `WhatsApp Personal ${Date.now()}`,
+                        url: 'https://web.whatsapp.com/',
+                        icon: 'fab fa-whatsapp',
+                        backgroundColor: '#25D366'
+                    },
+                    'whatsapp-business': {
+                        name: `WhatsApp Business ${Date.now()}`,
+                        url: 'https://web.whatsapp.com/',
+                        icon: 'fab fa-whatsapp',
+                        backgroundColor: '#075e54'
+                    },
+                    'messenger': {
+                        name: `Messenger ${Date.now()}`,
+                        url: 'https://www.messenger.com/',
+                        icon: 'fab fa-facebook-messenger',
+                        backgroundColor: '#0084FF'
+                    }
+                };
+
+                const template = templates[type];
+                if (!template) return;
+
+                const newApp = {
+                    id: type.includes('whatsapp-business') ? `whatsapp-business-${this.nextAppId++}` : `${type}-${this.nextAppId++}`,
+                    name: template.name,
+                    url: template.url,
+                    icon: template.icon,
+                    backgroundColor: template.backgroundColor,
+                    enabled: true,
+                    builtin: false,
+                    notifications: 0
+                };
+
+                this.services.push(newApp);
+                this.renderAppManager();
+                console.log(`🚀 Added quick template: ${newApp.name}`);
+            }
+
+            saveAppsAndReload() {
+                this.saveAppsConfig();
+                this.renderServices();
+                this.closeAppManagerModal();
+                console.log('💾 Apps configuration saved and interface updated');
+            }
+
+            resetToDefaultApps() {
+                const confirmed = confirm('¿Estás seguro de que quieres restablecer todas las aplicaciones a la configuración por defecto? Se perderán todas las aplicaciones personalizadas.');
+                if (confirmed) {
+                    this.services = this.defaultApps.map(app => ({
+                        ...app,
+                        notifications: 0
+                    }));
+                    this.saveAppsConfig();
+                    this.renderAppManager();
+                    this.renderServices();
+                    console.log('🔄 Reset to default apps configuration');
+                }
+            }
+
+            closeAppManagerModal() {
+                document.getElementById('appManagerModal').classList.remove('active');
             }
 
             setupModal() {

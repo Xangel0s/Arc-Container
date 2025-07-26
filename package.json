@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "arc-container",
   "version": "1.0.0",
   "description": "Arc Container - Gestor profesional de aplicaciones web",
@@ -9,49 +9,19 @@
     "build": "electron-builder",
     "build-win": "electron-builder --win",
     "build-mac": "electron-builder --mac",
-    "build-linux": "electron-builder --linux",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-linux": "electron-builder --linux"
   },
   "keywords": [
     "electron",
     "webview",
     "messaging",
-    "productivity",
-    "arc-container"
+    "productivity"
   ],
   "author": "Arc Container Team",
   "license": "MIT",
-  "build": {
-    "appId": "com.arccontainer.app",
-    "productName": "Arc Container",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "main.js",
-      "preload.js",
-      "index.html",
-      "assets/**/*",
-      "node_modules/**/*"
-    ],
-    "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.icns"
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "assets/icon.png"
-    }
-  },
   "dependencies": {
-    "electron": "^37.2.4",
-    "electron-store": "^10.1.0"
-  },
-  "devDependencies": {
-    "electron-builder": "^26.0.12"
+    "electron": "13.6.3",
+    "electron-builder": "^22.14.13",
+    "electron-store": "^6.0.1"
   }
 }
