@@ -693,6 +693,141 @@
             background: #0056cc;
         }
 
+        /* ================ DIALOGOS PERSONALIZADOS ================ */
+        .custom-dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .custom-dialog-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .custom-dialog {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+        }
+
+        .custom-dialog-overlay.active .custom-dialog {
+            transform: scale(1) translateY(0);
+        }
+
+        .custom-dialog-header {
+            padding: 20px 20px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .custom-dialog-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+
+        .custom-dialog-icon.warning {
+            background: var(--accent-orange);
+        }
+
+        .custom-dialog-icon.danger {
+            background: var(--accent-red);
+        }
+
+        .custom-dialog-icon.info {
+            background: var(--accent-blue);
+        }
+
+        .custom-dialog-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .custom-dialog-body {
+            padding: 16px 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .custom-dialog-footer {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .custom-dialog-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            min-width: 80px;
+        }
+
+        .custom-dialog-button.primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .custom-dialog-button.primary:hover {
+            background: #0056CC;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 122, 255, 0.3);
+        }
+
+        .custom-dialog-button.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .custom-dialog-button.secondary:hover {
+            background: var(--bg-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .custom-dialog-button.danger {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .custom-dialog-button.danger:hover {
+            background: #D70015;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(255, 59, 48, 0.3);
+        }
+
         /* App Manager Styles */
         .apps-manager-list {
             display: grid;
@@ -2585,7 +2720,7 @@
                 console.log(`💾 Saving edit for app: ${appId}, name: ${name}, color: ${color}`);
                 
                 if (!name) {
-                    alert('Por favor ingresa un nombre para la aplicación.');
+                    this.customAlert('Por favor ingresa un nombre para la aplicación.', 'Campo requerido');
                     return;
                 }
                 
@@ -2682,8 +2817,8 @@
                 console.log('💾 Apps configuration saved and interface updated');
             }
 
-            resetToDefaultApps() {
-                const confirmed = confirm('¿Estás seguro de que quieres restablecer todas las aplicaciones a la configuración por defecto? Se perderán todas las aplicaciones personalizadas.');
+            async resetToDefaultApps() {
+                const confirmed = await this.customConfirmDanger('¿Estás seguro de que quieres restablecer todas las aplicaciones a la configuración por defecto? Se perderán todas las aplicaciones personalizadas.', 'Restablecer configuración');
                 if (confirmed) {
                     this.services = this.defaultApps.map(app => ({
                         ...app,
@@ -2942,7 +3077,7 @@
                 }
             }
 
-            deleteApp(appId) {
+            async deleteApp(appId) {
                 const app = this.services.find(s => s.id === appId);
                 if (!app) {
                     console.error(`❌ App not found: ${appId}`);
@@ -2950,11 +3085,11 @@
                 }
                 
                 if (app.builtin) {
-                    alert('No se pueden eliminar aplicaciones integradas. Puedes deshabilitarlas en su lugar.');
+                    this.customAlert('No se pueden eliminar aplicaciones integradas. Puedes deshabilitarlas en su lugar.', 'Aplicación integrada');
                     return;
                 }
                 
-                const confirmed = confirm(`¿Estás seguro de que quieres eliminar "${app.name}"? Esta acción no se puede deshacer.`);
+                const confirmed = await this.customConfirmDanger(`¿Estás seguro de que quieres eliminar "${app.name}"? Esta acción no se puede deshacer.`, 'Eliminar aplicación');
                 if (!confirmed) return;
                 
                 // Remover de la lista
@@ -3038,7 +3173,7 @@
                 const color = document.getElementById('newAppColor').value;
                 
                 if (!name || !url || !icon) {
-                    alert('Por favor completa todos los campos requeridos.');
+                    this.customAlert('Por favor completa todos los campos requeridos.', 'Campos requeridos');
                     return;
                 }
                 
@@ -3046,7 +3181,7 @@
                 try {
                     new URL(url);
                 } catch {
-                    alert('Por favor ingresa una URL válida.');
+                    this.customAlert('Por favor ingresa una URL válida.', 'URL inválida');
                     return;
                 }
                 
@@ -3137,6 +3272,124 @@
                     }
                 }, 30000); // Every 30 seconds
             }
+
+            // ================ DIALOGOS PERSONALIZADOS ================
+            showCustomDialog(options) {
+                return new Promise((resolve) => {
+                    const overlay = document.getElementById('customDialogOverlay');
+                    const dialog = document.getElementById('customDialog');
+                    const icon = document.getElementById('customDialogIcon');
+                    const iconContent = document.getElementById('customDialogIconContent');
+                    const title = document.getElementById('customDialogTitle');
+                    const body = document.getElementById('customDialogBody');
+                    const footer = document.getElementById('customDialogFooter');
+
+                    // Configurar icono
+                    icon.className = `custom-dialog-icon ${options.type || 'info'}`;
+                    iconContent.className = this.getDialogIcon(options.type || 'info');
+
+                    // Configurar contenido
+                    title.textContent = options.title || 'Confirmación';
+                    body.textContent = options.message || '';
+
+                    // Configurar botones
+                    footer.innerHTML = '';
+                    
+                    if (options.type === 'confirm') {
+                        // Botón Cancelar
+                        const cancelBtn = document.createElement('button');
+                        cancelBtn.className = 'custom-dialog-button secondary';
+                        cancelBtn.textContent = options.cancelText || 'Cancelar';
+                        cancelBtn.onclick = () => {
+                            this.hideCustomDialog();
+                            resolve(false);
+                        };
+                        footer.appendChild(cancelBtn);
+
+                        // Botón Confirmar
+                        const confirmBtn = document.createElement('button');
+                        confirmBtn.className = `custom-dialog-button ${options.danger ? 'danger' : 'primary'}`;
+                        confirmBtn.textContent = options.confirmText || 'Confirmar';
+                        confirmBtn.onclick = () => {
+                            this.hideCustomDialog();
+                            resolve(true);
+                        };
+                        footer.appendChild(confirmBtn);
+                    } else {
+                        // Solo botón OK para alertas
+                        const okBtn = document.createElement('button');
+                        okBtn.className = 'custom-dialog-button primary';
+                        okBtn.textContent = options.okText || 'Aceptar';
+                        okBtn.onclick = () => {
+                            this.hideCustomDialog();
+                            resolve(true);
+                        };
+                        footer.appendChild(okBtn);
+                    }
+
+                    // Mostrar diálogo
+                    overlay.classList.add('active');
+                    
+                    // Enfocar el primer botón
+                    setTimeout(() => {
+                        const firstButton = footer.querySelector('button');
+                        if (firstButton) firstButton.focus();
+                    }, 100);
+
+                    // Cerrar con Escape
+                    const handleEscape = (e) => {
+                        if (e.key === 'Escape') {
+                            this.hideCustomDialog();
+                            resolve(false);
+                            document.removeEventListener('keydown', handleEscape);
+                        }
+                    };
+                    document.addEventListener('keydown', handleEscape);
+                });
+            }
+
+            hideCustomDialog() {
+                const overlay = document.getElementById('customDialogOverlay');
+                overlay.classList.remove('active');
+            }
+
+            getDialogIcon(type) {
+                switch (type) {
+                    case 'warning':
+                        return 'fas fa-exclamation-triangle';
+                    case 'danger':
+                        return 'fas fa-times-circle';
+                    case 'info':
+                    default:
+                        return 'fas fa-info-circle';
+                }
+            }
+
+            // Reemplazar alert() y confirm() nativos
+            customAlert(message, title = 'Información') {
+                return this.showCustomDialog({
+                    type: 'info',
+                    title: title,
+                    message: message
+                });
+            }
+
+            customConfirm(message, title = 'Confirmación') {
+                return this.showCustomDialog({
+                    type: 'confirm',
+                    title: title,
+                    message: message
+                });
+            }
+
+            customConfirmDanger(message, title = 'Confirmación') {
+                return this.showCustomDialog({
+                    type: 'confirm',
+                    title: title,
+                    message: message,
+                    danger: true
+                });
+            }
         }
 
         // Initialize
@@ -3197,5 +3450,19 @@
 
     <!-- Contenedor para notificaciones toast -->
     <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Contenedor para diálogos personalizados -->
+    <div class="custom-dialog-overlay" id="customDialogOverlay">
+        <div class="custom-dialog" id="customDialog">
+            <div class="custom-dialog-header">
+                <div class="custom-dialog-icon" id="customDialogIcon">
+                    <i id="customDialogIconContent"></i>
+                </div>
+                <h3 class="custom-dialog-title" id="customDialogTitle"></h3>
+            </div>
+            <div class="custom-dialog-body" id="customDialogBody"></div>
+            <div class="custom-dialog-footer" id="customDialogFooter"></div>
+        </div>
+    </div>
 </body>
 </html>
