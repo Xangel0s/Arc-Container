@@ -395,6 +395,113 @@
             color: var(--text-primary);
         }
 
+        /* Estilos para el modal de nueva aplicación */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+        }
+
+        .form-group input[type="color"] {
+            width: 60px;
+            height: 40px;
+            padding: 2px;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .modal-button:hover::before {
+            left: 100%;
+        }
+
+        .modal-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .modal-button:active {
+            transform: translateY(0);
+            transition: all 0.1s ease;
+        }
+
+        .modal-button.primary {
+            background: var(--accent-blue);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 122, 255, 0.3);
+        }
+
+        .modal-button.primary:hover {
+            background: #0056b3;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+        }
+
+        .modal-button.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-button.secondary:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
         .modal-body {
             padding: 20px;
             max-height: 60vh;
@@ -547,6 +654,38 @@
             margin-bottom: 24px;
         }
 
+        /* Animación de entrada para elementos del administrador */
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .app-manager-item {
+            animation: slideInFromTop 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        /* Solo animar entrada la primera vez */
+        .app-manager-item.initial-load:nth-child(1) { animation-delay: 0.1s; }
+        .app-manager-item.initial-load:nth-child(2) { animation-delay: 0.15s; }
+        .app-manager-item.initial-load:nth-child(3) { animation-delay: 0.2s; }
+        .app-manager-item.initial-load:nth-child(4) { animation-delay: 0.25s; }
+        .app-manager-item.initial-load:nth-child(5) { animation-delay: 0.3s; }
+        .app-manager-item.initial-load:nth-child(6) { animation-delay: 0.35s; }
+        .app-manager-item.initial-load:nth-child(7) { animation-delay: 0.4s; }
+        .app-manager-item.initial-load:nth-child(8) { animation-delay: 0.45s; }
+        .app-manager-item.initial-load:nth-child(9) { animation-delay: 0.5s; }
+        .app-manager-item.initial-load:nth-child(10) { animation-delay: 0.55s; }
+        .app-manager-item.initial-load:nth-child(11) { animation-delay: 0.6s; }
+        .app-manager-item.initial-load:nth-child(12) { animation-delay: 0.65s; }
+        .app-manager-item.initial-load:nth-child(13) { animation-delay: 0.7s; }
+        .app-manager-item.initial-load:nth-child(14) { animation-delay: 0.75s; }
+
         .app-manager-item {
             display: flex;
             align-items: center;
@@ -554,28 +693,58 @@
             background: var(--bg-secondary);
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            transition: var(--transition);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .app-manager-item:hover {
             background: var(--bg-hover);
             border-color: var(--accent-blue);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        .app-manager-item:active {
+            transform: translateY(0);
+            transition: all 0.1s ease;
         }
 
         .app-manager-item.disabled {
             opacity: 0.5;
+            transform: scale(0.98);
+        }
+
+        .app-manager-item.disabled:hover {
+            transform: translateY(-1px) scale(0.98);
         }
 
         .app-icon-preview {
             width: 32px;
             height: 32px;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 12px;
             color: white;
             font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: scale(1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .app-manager-item:hover .app-icon-preview {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .app-icon-preview i {
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .app-manager-item:hover .app-icon-preview i {
+            transform: scale(1.05);
         }
 
         .app-info {
@@ -611,11 +780,22 @@
             border-radius: 10px;
             position: relative;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .app-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         .app-toggle.active {
             background: var(--accent-blue);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(0, 122, 255, 0.2);
+        }
+
+        .app-toggle.active:hover {
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(0, 122, 255, 0.3);
         }
 
         .app-toggle-handle {
@@ -626,36 +806,54 @@
             position: absolute;
             top: 2px;
             left: 2px;
-            transition: var(--transition);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .app-toggle.active .app-toggle-handle {
             transform: translateX(20px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         }
 
         .app-action-btn {
             width: 28px;
             height: 28px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             background: var(--bg-tertiary);
             color: var(--text-secondary);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition);
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             font-size: 12px;
+            transform: scale(1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .app-action-btn:hover {
             background: var(--bg-hover);
             color: var(--text-primary);
+            transform: scale(1.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+        }
+
+        .app-action-btn:active {
+            transform: scale(0.95);
+            transition: all 0.1s ease;
         }
 
         .app-action-btn.delete:hover {
             background: #ff4757;
             color: white;
+            box-shadow: 0 2px 6px rgba(255, 71, 87, 0.3);
+        }
+
+        .app-action-btn.edit:hover {
+            background: var(--accent-blue);
+            color: white;
+            box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
         }
 
         .add-app-section {
@@ -671,6 +869,44 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .add-app-section h3:hover {
+            color: var(--accent-blue);
+            transform: translateX(5px);
+        }
+
+        .quick-templates button {
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: scale(1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-templates button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .quick-templates button:hover::before {
+            left: 100%;
+        }
+
+        .quick-templates button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .quick-templates button:active {
+            transform: scale(0.95);
+            transition: all 0.1s ease;
         }
 
         .add-app-form {
@@ -1163,6 +1399,16 @@
 
                     <div class="switch-control">
                         <div>
+                            <div style="font-size: 14px; color: var(--text-primary);">Permitir popups</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">Permitir ventanas emergentes (necesario para Teams, etc.)</div>
+                        </div>
+                        <div class="switch" id="allowPopups">
+                            <div class="switch-handle"></div>
+                        </div>
+                    </div>
+
+                    <div class="switch-control">
+                        <div>
                             <div style="font-size: 14px; color: var(--text-primary);">Hardware acceleration</div>
                             <div style="font-size: 12px; color: var(--text-secondary);">Usar aceleración por hardware (requiere reinicio)</div>
                         </div>
@@ -1300,6 +1546,8 @@
         </div>
     </div>
 
+
+
     <script>
         // ================ WINDOW CONTROLS ================
         function minimizeWindow() {
@@ -1309,7 +1557,20 @@
 
         function toggleMaximize() {
             const { ipcRenderer } = require('electron');
-            ipcRenderer.invoke('toggle-maximize');
+            ipcRenderer.invoke('toggle-maximize').then(() => {
+                // Actualizar el icono del botón
+                const maximizeBtn = document.querySelector('.window-control.maximize i');
+                if (maximizeBtn) {
+                    // El estado se actualizará cuando la ventana responda
+                    setTimeout(() => {
+                        const { remote } = require('electron');
+                        if (remote && remote.getCurrentWindow) {
+                            const isMaximized = remote.getCurrentWindow().isMaximized();
+                            maximizeBtn.className = isMaximized ? 'fas fa-compress' : 'fas fa-expand';
+                        }
+                    }, 100);
+                }
+            });
         }
 
         function closeWindow() {
@@ -1466,7 +1727,8 @@
                     notificationSound: true,
                     badgeCount: true,
                     autoHideMenuBar: true,
-                    hardwareAcceleration: true
+                    hardwareAcceleration: true,
+                    allowPopups: false
                 };
                 
                 this.init();
@@ -1517,9 +1779,51 @@
                 this.setupEventListeners();
                 this.setupModal();
                 this.loadSettings();
+                this.setupWindowControls();
+                
+                // Auto-iniciar último servicio si está habilitado
+                if (this.settings.autoStartLast) {
+                    this.autoStartLastService();
+                }
+                
                 // Demostración diferida para mejor rendimiento
                 setTimeout(() => this.simulateNotifications(), 5000);
                 console.log('✅ Arc Container Premium ready');
+            }
+            
+            setupWindowControls() {
+                // Escuchar cambios en el estado de la ventana
+                const { ipcRenderer } = require('electron');
+                
+                // Actualizar icono de maximizar cuando cambie el estado
+                ipcRenderer.on('window-state-changed', (event, isMaximized) => {
+                    const maximizeBtn = document.querySelector('.window-control.maximize i');
+                    if (maximizeBtn) {
+                        maximizeBtn.className = isMaximized ? 'fas fa-compress' : 'fas fa-expand';
+                    }
+                });
+                
+                // Escuchar comandos del system tray
+                ipcRenderer.on('switch-to-service', (event, serviceId) => {
+                    console.log(`🔄 Switching to service from tray: ${serviceId}`);
+                    this.switchToService(serviceId);
+                });
+                
+                ipcRenderer.on('open-settings', (event) => {
+                    console.log('⚙️ Opening settings from tray');
+                    this.openSettings();
+                });
+            }
+            
+            autoStartLastService() {
+                const lastActiveService = localStorage.getItem('arc-last-active-service');
+                if (lastActiveService) {
+                    const service = this.services.find(s => s.id === lastActiveService && s.enabled);
+                    if (service) {
+                        console.log(`🔄 Auto-starting last service: ${service.name}`);
+                        this.switchToService(service.id);
+                    }
+                }
             }
 
             renderServices() {
@@ -1587,7 +1891,7 @@
                 webview.id = `webview-${serviceId}`;
                 // NO CARGAR URL INMEDIATAMENTE - se cargará en switchToService
                 webview.partition = `persist:${serviceId}`;
-                webview.allowpopups = true;
+                webview.allowpopups = this.settings.allowPopups;
                 // User Agent más específico para cada servicio
                 webview.useragent = this.getUserAgentForService(serviceId);
                 
@@ -1631,6 +1935,22 @@
                 // Eventos simplificados sin animaciones complejas
                 webview.addEventListener('loadstart', () => {
                     console.log(`🔄 ${service.name}: Loading...`);
+                });
+                
+                // Manejar ventanas nuevas según configuración
+                webview.addEventListener('new-window', (e) => {
+                    if (this.settings.allowPopups) {
+                        console.log(`✅ ${service.name}: Allowing new window:`, e.url);
+                        // Permitir la ventana nueva
+                        e.preventDefault();
+                        // Abrir en el navegador externo para mantener la funcionalidad
+                        require('electron').shell.openExternal(e.url);
+                    } else {
+                        console.log(`🚫 ${service.name}: Blocked new window:`, e.url);
+                        e.preventDefault();
+                        // Abrir en el navegador externo
+                        require('electron').shell.openExternal(e.url);
+                    }
                 });
                 
                 webview.addEventListener('loadstop', () => {
@@ -1686,6 +2006,14 @@
                 document.getElementById('settingsBtn').addEventListener('click', () => {
                     this.openSettings();
                 });
+
+                // Doble clic en la barra de título para maximizar/minimizar
+                const titleBar = document.querySelector('.title-bar');
+                if (titleBar) {
+                    titleBar.addEventListener('dblclick', () => {
+                        toggleMaximize();
+                    });
+                }
 
                 // Sistema de notificaciones
                 this.setupNotifications();
@@ -1868,6 +2196,9 @@
                 this.updateServiceInfo(service);
                 this.currentService = serviceId;
 
+                // Guardar último servicio activo
+                localStorage.setItem('arc-last-active-service', serviceId);
+
                 // Clear notifications for this service
                 service.notifications = 0;
                 this.updateServiceBadge(serviceId);
@@ -1904,7 +2235,8 @@
                 
                 const existingBadge = serviceItem.querySelector('.service-badge');
                 
-                if (service.notifications > 0) {
+                // Solo mostrar badge si está habilitado en configuración
+                if (service.notifications > 0 && this.settings.badgeCount) {
                     if (!existingBadge) {
                         const badge = document.createElement('div');
                         badge.className = 'service-badge';
@@ -1912,9 +2244,14 @@
                         serviceItem.appendChild(badge);
                     } else {
                         existingBadge.textContent = service.notifications;
+                        existingBadge.style.display = 'flex';
                     }
                 } else if (existingBadge) {
-                    existingBadge.remove();
+                    if (!this.settings.badgeCount) {
+                        existingBadge.style.display = 'none';
+                    } else {
+                        existingBadge.remove();
+                    }
                 }
             }
 
@@ -1997,7 +2334,13 @@
             // ================ ADMINISTRADOR DE APLICACIONES ================
             openAppManager() {
                 console.log('📱 Opening app manager...');
-                this.renderAppManager();
+                
+                // Solo renderizar si es la primera vez o si no hay elementos
+                const container = document.getElementById('appsManagerList');
+                if (!container.children.length) {
+                    this.renderAppManager();
+                }
+                
                 document.getElementById('appManagerModal').classList.add('active');
                 this.setupAppManagerEvents();
             }
@@ -2008,7 +2351,7 @@
 
                 this.services.forEach(app => {
                     const item = document.createElement('div');
-                    item.className = `app-manager-item ${!app.enabled ? 'disabled' : ''}`;
+                    item.className = `app-manager-item ${!app.enabled ? 'disabled' : ''} initial-load`;
                     item.setAttribute('data-app-id', app.id);
 
                     item.innerHTML = `
@@ -2039,57 +2382,46 @@
 
                     container.appendChild(item);
                 });
+
+                // Remover la clase initial-load después de la animación
+                setTimeout(() => {
+                    document.querySelectorAll('.app-manager-item.initial-load').forEach(item => {
+                        item.classList.remove('initial-load');
+                    });
+                }, 1000);
+            }
+
+            // Método optimizado para actualizar solo el estado del toggle
+            updateAppToggleState(appId) {
+                const toggle = document.querySelector(`[data-app-id="${appId}"] .app-toggle`);
+                const item = document.querySelector(`[data-app-id="${appId}"]`);
+                const app = this.services.find(s => s.id === appId);
+                
+                if (toggle && app) {
+                    if (app.enabled) {
+                        toggle.classList.add('active');
+                        item.classList.remove('disabled');
+                    } else {
+                        toggle.classList.remove('active');
+                        item.classList.add('disabled');
+                    }
+                }
             }
 
             setupAppManagerEvents() {
-                // Limpiar eventos anteriores para evitar duplicados
+                // Solo configurar eventos para elementos dinámicos
                 const modal = document.getElementById('appManagerModal');
-                const closeBtn = document.getElementById('closeAppManagerModal');
-                const saveBtn = document.getElementById('saveApps');
-                const resetBtn = document.getElementById('resetApps');
-                const addBtn = document.getElementById('addNewApp');
-
-                // Remover listeners anteriores clonando elementos
-                if (closeBtn) {
-                    const newCloseBtn = closeBtn.cloneNode(true);
-                    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
-                    newCloseBtn.addEventListener('click', () => {
-                        this.closeAppManagerModal();
-                    });
-                }
-
-                if (saveBtn) {
-                    const newSaveBtn = saveBtn.cloneNode(true);
-                    saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
-                    newSaveBtn.addEventListener('click', () => {
-                        this.saveAppsAndReload();
-                    });
-                }
-
-                if (resetBtn) {
-                    const newResetBtn = resetBtn.cloneNode(true);
-                    resetBtn.parentNode.replaceChild(newResetBtn, resetBtn);
-                    newResetBtn.addEventListener('click', () => {
-                        this.resetToDefaultApps();
-                    });
-                }
-
-                if (addBtn) {
-                    const newAddBtn = addBtn.cloneNode(true);
-                    addBtn.parentNode.replaceChild(newAddBtn, addBtn);
-                    newAddBtn.addEventListener('click', () => {
-                        this.addNewApp();
-                    });
-                }
-
+                
                 // Delegación de eventos para los elementos dinámicos
                 const container = document.getElementById('appsManagerList');
                 if (container) {
-                    // Remover listener anterior
-                    const newContainer = container.cloneNode(true);
-                    container.parentNode.replaceChild(newContainer, container);
+                    // Remover listener anterior si existe
+                    if (container._clickHandler) {
+                        container.removeEventListener('click', container._clickHandler);
+                    }
                     
-                    newContainer.addEventListener('click', (e) => {
+                    // Crear nuevo handler
+                    container._clickHandler = (e) => {
                         const appId = e.target.closest('[data-app-id]')?.getAttribute('data-app-id');
                         if (!appId) return;
 
@@ -2102,8 +2434,12 @@
                         } else if (e.target.closest('.app-action-btn:not(.delete):not(.edit)')) {
                             this.duplicateApp(appId);
                         }
-                    });
+                    };
+                    
+                    container.addEventListener('click', container._clickHandler);
                 }
+
+
 
                 // Cerrar modal al hacer click fuera
                 modal.addEventListener('click', (e) => {
@@ -2115,46 +2451,108 @@
 
             openEditAppModal(appId) {
                 const app = this.services.find(s => s.id === appId);
-                if (!app) return;
+                if (!app) {
+                    console.error(`❌ App not found: ${appId}`);
+                    return;
+                }
+                
+                console.log(`✏️ Opening edit modal for: ${app.name}`);
+                
                 // Rellenar campos
-                document.getElementById('editAppName').value = app.name;
-                document.getElementById('editAppColor').value = app.backgroundColor || '#007AFF';
-                document.getElementById('editAppId').value = app.id;
-                document.getElementById('editAppModal').classList.add('active');
+                const nameInput = document.getElementById('editAppName');
+                const colorInput = document.getElementById('editAppColor');
+                const idInput = document.getElementById('editAppId');
+                const modal = document.getElementById('editAppModal');
+                
+                if (nameInput && colorInput && idInput && modal) {
+                    nameInput.value = app.name;
+                    colorInput.value = app.backgroundColor || '#007AFF';
+                    idInput.value = app.id;
+                    modal.classList.add('active');
+                    
+                    // Enfocar el campo de nombre
+                    setTimeout(() => {
+                        nameInput.focus();
+                        nameInput.select();
+                    }, 200);
+                    
+                    console.log(`✅ Edit modal opened for: ${app.name}`);
+                } else {
+                    console.error('❌ Edit modal elements not found');
+                }
             }
 
             saveEditApp() {
                 const appId = document.getElementById('editAppId').value;
                 const name = document.getElementById('editAppName').value.trim();
                 const color = document.getElementById('editAppColor').value;
+                
+                console.log(`💾 Saving edit for app: ${appId}, name: ${name}, color: ${color}`);
+                
+                if (!name) {
+                    alert('Por favor ingresa un nombre para la aplicación.');
+                    return;
+                }
+                
                 const app = this.services.find(s => s.id === appId);
                 if (app) {
                     app.name = name;
                     app.backgroundColor = color;
-                    this.renderAppManager();
-                    this.renderServices();
+                    
+                    // Actualizar solo el elemento específico en lugar de recargar toda la lista
+                    this.updateAppItem(appId, name, color);
+                    
                     document.getElementById('editAppModal').classList.remove('active');
                     this.saveAppsConfig();
+                    
+                    console.log(`✅ App updated: ${app.name}`);
+                    this.showToast('Aplicación actualizada', `${app.name} ha sido actualizada`, 'arc-container');
+                } else {
+                    console.error(`❌ App not found for saving: ${appId}`);
                 }
+            }
+
+            // Método para actualizar solo un elemento específico
+            updateAppItem(appId, name, color) {
+                const item = document.querySelector(`[data-app-id="${appId}"]`);
+                if (item) {
+                    // Actualizar el nombre
+                    const nameElement = item.querySelector('.app-name');
+                    if (nameElement) {
+                        nameElement.textContent = name;
+                    }
+                    
+                    // Actualizar el color del icono
+                    const iconElement = item.querySelector('.app-icon-preview');
+                    if (iconElement) {
+                        iconElement.style.backgroundColor = color;
+                    }
+                }
+            }
+
+            // Método para forzar la recarga de la lista (solo cuando sea necesario)
+            forceRefreshAppManager() {
+                console.log('🔄 Forcing app manager refresh...');
+                this.renderAppManager();
             }
 
             // Plantillas rápidas para aplicaciones comunes
             addQuickTemplate(type) {
                 const templates = {
                     'whatsapp': {
-                        name: `WhatsApp Personal ${Date.now()}`,
+                        name: 'WhatsApp Personal',
                         url: 'https://web.whatsapp.com/',
                         icon: 'fab fa-whatsapp',
                         backgroundColor: '#25D366'
                     },
                     'whatsapp-business': {
-                        name: `WhatsApp Business ${Date.now()}`,
+                        name: 'WhatsApp Business',
                         url: 'https://web.whatsapp.com/',
                         icon: 'fab fa-whatsapp',
                         backgroundColor: '#075e54'
                     },
                     'messenger': {
-                        name: `Messenger ${Date.now()}`,
+                        name: 'Messenger',
                         url: 'https://www.messenger.com/',
                         icon: 'fab fa-facebook-messenger',
                         backgroundColor: '#0084FF'
@@ -2164,20 +2562,22 @@
                 const template = templates[type];
                 if (!template) return;
 
-                const newApp = {
-                    id: type.includes('whatsapp-business') ? `whatsapp-business-${this.nextAppId++}` : `${type}-${this.nextAppId++}`,
-                    name: template.name,
-                    url: template.url,
-                    icon: template.icon,
-                    backgroundColor: template.backgroundColor,
-                    enabled: true,
-                    builtin: false,
-                    notifications: 0
-                };
-
-                this.services.push(newApp);
-                this.renderAppManager();
-                console.log(`🚀 Added quick template: ${newApp.name}`);
+                // Llenar el formulario con la plantilla seleccionada
+                document.getElementById('newAppName').value = template.name;
+                document.getElementById('newAppUrl').value = template.url;
+                document.getElementById('newAppIcon').value = template.icon;
+                document.getElementById('newAppColor').value = template.backgroundColor;
+                
+                // Enfocar el campo de nombre para que el usuario pueda editarlo
+                setTimeout(() => {
+                    const nameInput = document.getElementById('newAppName');
+                    if (nameInput) {
+                        nameInput.focus();
+                        nameInput.select();
+                    }
+                }, 200);
+                
+                console.log(`📝 Filled form with template: ${template.name}`);
             }
 
             saveAppsAndReload() {
@@ -2195,7 +2595,7 @@
                         notifications: 0
                     }));
                     this.saveAppsConfig();
-                    this.renderAppManager();
+                    this.forceRefreshAppManager();
                     this.renderServices();
                     console.log('🔄 Reset to default apps configuration');
                 }
@@ -2234,6 +2634,17 @@
                         switchEl.classList.toggle('active');
                         const settingKey = switchEl.id;
                         this.settings[settingKey] = switchEl.classList.contains('active');
+                        
+                        // Aplicar configuración inmediatamente para algunos switches
+                        if (settingKey === 'badgeCount') {
+                            this.applyBadgeSettings();
+                        } else if (settingKey === 'allowPopups') {
+                            this.applyPopupSettings();
+                        } else if (settingKey === 'showNotifications') {
+                            this.applyNotificationSettings();
+                        } else if (settingKey === 'autoHideMenuBar') {
+                            this.applyMenuSettings();
+                        }
                     });
                 });
 
@@ -2312,14 +2723,83 @@
                 document.querySelectorAll('.theme-option').forEach(option => {
                     option.classList.toggle('active', option.dataset.theme === this.settings.theme);
                 });
+                
+                // Aplicar todas las configuraciones
+                this.applySettings();
             }
 
             saveSettings() {
                 localStorage.setItem('arcContainerSettings', JSON.stringify(this.settings));
                 console.log('💾 Settings saved:', this.settings);
                 
+                // Guardar también en el main process
+                const { ipcRenderer } = require('electron');
+                ipcRenderer.invoke('save-settings', this.settings);
+                
+                // Aplicar configuraciones inmediatamente
+                this.applySettings();
+                
                 // Mostrar notificación de guardado
                 this.showNotification('Configuración guardada', 'success');
+            }
+            
+            applySettings() {
+                // Aplicar tema
+                this.applyTheme(this.settings.theme);
+                
+                // Aplicar configuración de notificaciones
+                this.applyNotificationSettings();
+                
+                // Aplicar configuración de badges
+                this.applyBadgeSettings();
+                
+                // Aplicar configuración de menú
+                this.applyMenuSettings();
+                
+                // Aplicar configuración de popups
+                this.applyPopupSettings();
+                
+                console.log('⚙️ Settings applied:', this.settings);
+            }
+            
+            applyNotificationSettings() {
+                // Configurar notificaciones según settings
+                if (!this.settings.showNotifications) {
+                    console.log('🔕 Notifications disabled');
+                } else {
+                    console.log('🔔 Notifications enabled');
+                }
+            }
+            
+            applyBadgeSettings() {
+                // Mostrar/ocultar badges según configuración
+                const badges = document.querySelectorAll('.service-badge');
+                badges.forEach(badge => {
+                    if (this.settings.badgeCount) {
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                });
+            }
+            
+            applyMenuSettings() {
+                // Configurar barra de menú según settings
+                if (this.settings.autoHideMenuBar) {
+                    console.log('📱 Menu bar auto-hide enabled');
+                } else {
+                    console.log('📱 Menu bar always visible');
+                }
+            }
+            
+            applyPopupSettings() {
+                // Actualizar configuración de popups en webviews existentes
+                this.webviews.forEach((webview, serviceId) => {
+                    if (webview) {
+                        webview.allowpopups = this.settings.allowPopups;
+                        console.log(`🔄 Updated popup settings for ${serviceId}: ${this.settings.allowPopups}`);
+                    }
+                });
             }
 
             resetSettings() {
@@ -2332,7 +2812,8 @@
                     notificationSound: true,
                     badgeCount: true,
                     autoHideMenuBar: true,
-                    hardwareAcceleration: true
+                    hardwareAcceleration: true,
+                    allowPopups: false
                 };
                 
                 this.loadSettings();
@@ -2340,7 +2821,175 @@
                 this.showNotification('Configuración restablecida', 'info');
             }
 
+            // ================ MÉTODOS FALTANTES DEL ADMINISTRADOR DE APLICACIONES ================
+            
+            toggleApp(appId) {
+                const app = this.services.find(s => s.id === appId);
+                if (!app) {
+                    console.error(`❌ App not found: ${appId}`);
+                    return;
+                }
+                
+                app.enabled = !app.enabled;
+                console.log(`🔄 ${app.name} ${app.enabled ? 'enabled' : 'disabled'}`);
+                
+                // Actualizar solo el estado del toggle (más eficiente)
+                this.updateAppToggleState(appId);
+                
+                // Si se deshabilitó el servicio actual, cambiar a otro
+                if (!app.enabled && this.currentService === appId) {
+                    const firstEnabled = this.services.find(s => s.enabled && s.id !== appId);
+                    if (firstEnabled) {
+                        this.switchToService(firstEnabled.id);
+                    } else {
+                        // Mostrar pantalla de bienvenida si no hay servicios habilitados
+                        document.getElementById('welcomeView').style.display = 'flex';
+                        this.currentService = null;
+                    }
+                }
+            }
+
+            deleteApp(appId) {
+                const app = this.services.find(s => s.id === appId);
+                if (!app) {
+                    console.error(`❌ App not found: ${appId}`);
+                    return;
+                }
+                
+                if (app.builtin) {
+                    alert('No se pueden eliminar aplicaciones integradas. Puedes deshabilitarlas en su lugar.');
+                    return;
+                }
+                
+                const confirmed = confirm(`¿Estás seguro de que quieres eliminar "${app.name}"? Esta acción no se puede deshacer.`);
+                if (!confirmed) return;
+                
+                // Remover de la lista
+                this.services = this.services.filter(s => s.id !== appId);
+                
+                // Si era el servicio actual, cambiar a otro
+                if (this.currentService === appId) {
+                    const firstEnabled = this.services.find(s => s.enabled);
+                    if (firstEnabled) {
+                        this.switchToService(firstEnabled.id);
+                    } else {
+                        document.getElementById('welcomeView').style.display = 'flex';
+                        this.currentService = null;
+                    }
+                }
+                
+                // Limpiar webview si existe
+                if (this.webviews.has(appId)) {
+                    const webview = this.webviews.get(appId);
+                    const container = webview.parentNode;
+                    if (container && container.parentNode) {
+                        container.parentNode.removeChild(container);
+                    }
+                    this.webviews.delete(appId);
+                }
+                
+                this.renderAppManager();
+                this.renderServices();
+                this.saveAppsConfig();
+                console.log(`🗑️ Deleted app: ${app.name}`);
+            }
+
+            duplicateApp(appId) {
+                const originalApp = this.services.find(s => s.id === appId);
+                if (!originalApp) {
+                    console.error(`❌ App not found: ${appId}`);
+                    return;
+                }
+                
+                const newApp = {
+                    ...originalApp,
+                    id: `${originalApp.id}-copy-${this.nextAppId++}`,
+                    name: `${originalApp.name} (Copia)`,
+                    enabled: false, // Deshabilitado por defecto para evitar conflictos
+                    builtin: false,
+                    notifications: 0
+                };
+                
+                this.services.push(newApp);
+                this.renderAppManager();
+                this.saveAppsConfig();
+                console.log(`📋 Duplicated app: ${originalApp.name} → ${newApp.name}`);
+                
+                // Mostrar notificación
+                this.showToast('Aplicación duplicada', `${newApp.name} ha sido creada`, 'arc-container');
+            }
+
+            addNewApp() {
+                // Limpiar campos del modal existente
+                document.getElementById('newAppName').value = '';
+                document.getElementById('newAppUrl').value = '';
+                document.getElementById('newAppIcon').value = 'fab fa-whatsapp';
+                document.getElementById('newAppColor').value = '#007AFF';
+                
+                // Enfocar el primer campo después de un pequeño delay
+                setTimeout(() => {
+                    const nameInput = document.getElementById('newAppName');
+                    if (nameInput) {
+                        nameInput.focus();
+                        nameInput.select();
+                    }
+                }, 200);
+                
+                console.log('📱 Form ready for new app');
+            }
+
+            saveNewApp() {
+                const name = document.getElementById('newAppName').value.trim();
+                const url = document.getElementById('newAppUrl').value.trim();
+                const icon = document.getElementById('newAppIcon').value.trim();
+                const color = document.getElementById('newAppColor').value;
+                
+                if (!name || !url || !icon) {
+                    alert('Por favor completa todos los campos requeridos.');
+                    return;
+                }
+                
+                // Validar URL
+                try {
+                    new URL(url);
+                } catch {
+                    alert('Por favor ingresa una URL válida.');
+                    return;
+                }
+                
+                const newApp = {
+                    id: `custom-${this.nextAppId++}`,
+                    name: name,
+                    url: url,
+                    icon: icon,
+                    backgroundColor: color,
+                    enabled: true,
+                    builtin: false,
+                    notifications: 0
+                };
+                
+                this.services.push(newApp);
+                this.forceRefreshAppManager();
+                this.renderServices();
+                this.saveAppsConfig();
+                
+                // Limpiar campos después de agregar
+                document.getElementById('newAppName').value = '';
+                document.getElementById('newAppUrl').value = '';
+                document.getElementById('newAppIcon').value = 'fab fa-whatsapp';
+                document.getElementById('newAppColor').value = '#007AFF';
+                
+                console.log(`🚀 Added new app: ${newApp.name}`);
+                this.showToast('Aplicación agregada', `${newApp.name} ha sido agregada exitosamente`, 'arc-container');
+            }
+
             showNotification(message, type = 'info') {
+                // Solo mostrar notificación si está habilitado en configuración
+                if (!this.settings.showNotifications) {
+                    console.log(`🔕 Notification blocked: ${message}`);
+                    return;
+                }
+                
                 // Crear notificación temporal
                 const notification = document.createElement('div');
                 notification.style.cssText = `
@@ -2377,6 +3026,12 @@
                         document.body.removeChild(notification);
                     }, 300);
                 }, 3000);
+                
+                // Reproducir sonido si está habilitado
+                if (this.settings.notificationSound) {
+                    console.log('🔊 Playing notification sound');
+                    // Aquí podrías agregar código para reproducir un sonido
+                }
             }
 
             simulateNotifications() {
@@ -2394,12 +3049,52 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             window.arcContainer = new ArcContainerPremium();
+            
             // Edit modal events
             document.getElementById('saveEditApp').addEventListener('click', () => {
                 window.arcContainer.saveEditApp();
             });
             document.getElementById('closeEditAppModal').addEventListener('click', () => {
                 document.getElementById('editAppModal').classList.remove('active');
+            });
+            
+            // Add Enter key support for new app form
+            document.getElementById('newAppName').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    window.arcContainer.saveNewApp();
+                }
+            });
+            document.getElementById('newAppUrl').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    window.arcContainer.saveNewApp();
+                }
+            });
+            
+            // Add Enter key support for edit modal
+            document.getElementById('editAppName').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    window.arcContainer.saveEditApp();
+                }
+            });
+            
+            // Connect the "Add Application" button
+            document.getElementById('addNewApp').addEventListener('click', () => {
+                window.arcContainer.saveNewApp();
+            });
+            
+            // Connect the "Save Changes" button
+            document.getElementById('saveApps').addEventListener('click', () => {
+                window.arcContainer.saveAppsAndReload();
+            });
+            
+            // Connect the "Reset to Default" button
+            document.getElementById('resetApps').addEventListener('click', () => {
+                window.arcContainer.resetToDefaultApps();
+            });
+            
+            // Connect the modal close button (X)
+            document.getElementById('closeAppManagerModal').addEventListener('click', () => {
+                window.arcContainer.closeAppManagerModal();
             });
         });
     </script>

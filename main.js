@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Notification, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, nativeImage, Tray, Menu } = require('electron');
 const path = require('path');
 
 // Configuración EXACTA de Rambox Community (Electron 13.6.3) - CONFIGURACIÓN MÍNIMA QUE FUNCIONA
@@ -16,7 +16,21 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 app.setName('Arc Container');
 app.setAppUserModelId('com.arccontainer.app');
 
+// Manejar cuando se inicia desde la barra de inicio
+if (process.platform === 'win32') {
+    app.setAppUserModelId('com.arccontainer.app');
+}
+
+// Prevenir múltiples instancias
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+    console.log('🔄 Another instance is running, quitting');
+    app.quit();
+    return;
+}
+
 let mainWindow;
+let tray;
 
 function createWindow() {
     // Crear la ventana principal
@@ -43,11 +57,14 @@ function createWindow() {
             // SIN allowRunningInsecureContent - Rambox NO lo usa  
             // SIN experimentalFeatures - Rambox NO lo usa
         },
-        icon: path.join(__dirname, 'assets', 'icon.png'), // Opcional: agregar icono
+        // Usar ícono por defecto de Electron para mejor compatibilidad
+        // icon: path.join(__dirname, 'assets', 'image-removebg-preview.png'), // Logo principal de la aplicación
         show: false, // No mostrar hasta que esté listo
         roundedCorners: true, // Esquinas redondeadas (Windows 11)
         shadow: true, // Sombra de ventana
-        thickFrame: false // Marco delgado
+        thickFrame: false, // Marco delgado
+        skipTaskbar: false, // Mostrar en la barra de tareas
+        title: 'Arc Container' // Título para la barra de tareas
     });
 
     // Cargar el archivo HTML principal
@@ -57,6 +74,19 @@ function createWindow() {
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
         console.log('🎉 Arc Container window ready and shown');
+        
+        // Configurar para que aparezca en la barra de inicio
+        if (process.platform === 'win32') {
+                            // Configurar detalles de la aplicación para Windows
+                // mainWindow.setAppDetails({
+                //     appId: 'com.arccontainer.app',
+                //     appIconPath: path.join(__dirname, 'assets', 'image-removebg-preview.png'),
+                //     appIconIndex: 0,
+                //     relaunchDisplayName: 'Arc Container',
+                //     relaunchCommand: process.execPath
+                // });
+        }
+        
         // Mostrar notificación de bienvenida después de un delay
         setTimeout(showWelcomeNotification, 3000);
     });
@@ -64,9 +94,21 @@ function createWindow() {
     // Prevenir cierre accidental
     mainWindow.on('close', (event) => {
         console.log('🔄 Window close requested');
-        // En lugar de cerrar, minimizar a la bandeja (opcional)
-        // event.preventDefault();
-        // mainWindow.hide();
+        // Obtener configuración de "cerrar a la bandeja"
+        const settings = store.get('arcContainerSettings', {});
+        const closeToTray = settings.closeToTray !== false; // Por defecto true
+        
+        if (closeToTray) {
+            console.log('🔄 Minimizing to tray instead of closing');
+            event.preventDefault();
+            mainWindow.hide();
+        } else {
+            console.log('❌ Closing application completely');
+            // Limpiar el tray
+            if (tray) {
+                tray.destroy();
+            }
+        }
     });
 
     // Manejar cierre de ventana
@@ -74,6 +116,41 @@ function createWindow() {
         console.log('❌ Window closed');
         mainWindow = null;
     });
+
+    // Manejar cierre completo de la aplicación
+    app.on('before-quit', () => {
+        console.log('🔄 Application quitting');
+        // Limpiar el tray
+        if (tray) {
+            tray.destroy();
+        }
+    });
+
+    // Manejar cuando se hace clic en la aplicación desde la barra de tareas
+    app.on('second-instance', () => {
+        console.log('🔄 Second instance detected, focusing main window');
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) {
+                mainWindow.restore();
+            }
+            mainWindow.show();
+            mainWindow.focus();
+        }
+    });
+
+    // Detectar cambios en el estado de maximización
+    mainWindow.on('maximize', () => {
+        console.log('📱 Window maximized');
+        mainWindow.webContents.send('window-state-changed', true);
+    });
+
+    mainWindow.on('unmaximize', () => {
+        console.log('📱 Window unmaximized');
+        mainWindow.webContents.send('window-state-changed', false);
+    });
+
+    // Crear el system tray
+    createTray();
 
     // Configuración de webviews EXACTA de Rambox - Solo lo esencial
     mainWindow.webContents.on('will-attach-webview', (event, webPreferences, params) => {
@@ -213,8 +290,29 @@ ipcMain.handle('toggle-maximize', () => {
 
 ipcMain.handle('close-window', () => {
     if (mainWindow) {
-        mainWindow.close();
+        // Obtener configuración de "cerrar a la bandeja"
+        const settings = store.get('arcContainerSettings', {});
+        const closeToTray = settings.closeToTray !== false; // Por defecto true
+        
+        if (closeToTray) {
+            console.log('🔄 Minimizing to tray instead of closing');
+            mainWindow.hide();
+        } else {
+            console.log('❌ Closing application');
+            mainWindow.close();
+        }
     }
+});
+
+// Handler para obtener configuración
+ipcMain.handle('get-settings', () => {
+    return store.get('arcContainerSettings', {});
+});
+
+// Handler para guardar configuración
+ipcMain.handle('save-settings', (event, settings) => {
+    store.set('arcContainerSettings', settings);
+    return true;
 });
 
 // ================ SISTEMA DE NOTIFICACIONES ================
@@ -407,4 +505,122 @@ function getDefaultConfig() {
             closeToTray: true
         }
     };
+}
+
+// ================ SYSTEM TRAY ================
+
+function createTray() {
+    // Crear ícono del tray con ícono por defecto para mejor compatibilidad
+    let trayIcon;
+    
+    try {
+        // Intentar usar el logo principal de la aplicación
+        const iconPath = path.join(__dirname, 'assets', 'image-removebg-preview.png');
+        trayIcon = nativeImage.createFromPath(iconPath);
+        console.log('✅ Using main application logo for tray');
+    } catch (error) {
+        console.log('⚠️ Logo not found, using default Electron icon');
+        // Usar ícono por defecto de Electron
+        trayIcon = nativeImage.createEmpty();
+    }
+    
+    // En Windows, el ícono del tray debe ser de 16x16 píxeles
+    const trayIcon16 = trayIcon.resize({ width: 16, height: 16 });
+    
+    tray = new Tray(trayIcon16);
+    tray.setToolTip('Arc Container - Centro de aplicaciones web');
+    
+    // Crear menú contextual del tray
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: '📦 Mostrar Arc Container',
+            click: () => {
+                if (mainWindow) {
+                    if (mainWindow.isMinimized()) {
+                        mainWindow.restore();
+                    }
+                    mainWindow.show();
+                    mainWindow.focus();
+                }
+            }
+        },
+        { type: 'separator' },
+        {
+            label: '💬 WhatsApp',
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.show();
+                    mainWindow.focus();
+                    mainWindow.webContents.send('switch-to-service', 'whatsapp');
+                }
+            }
+        },
+        {
+            label: '💬 Messenger',
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.show();
+                    mainWindow.focus();
+                    mainWindow.webContents.send('switch-to-service', 'messenger');
+                }
+            }
+        },
+        {
+            label: '📧 Gmail',
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.show();
+                    mainWindow.focus();
+                    mainWindow.webContents.send('switch-to-service', 'gmail');
+                }
+            }
+        },
+        {
+            label: '🎮 Discord',
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.show();
+                    mainWindow.focus();
+                    mainWindow.webContents.send('switch-to-service', 'discord');
+                }
+            }
+        },
+        { type: 'separator' },
+        {
+            label: '⚙️ Configuración',
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.show();
+                    mainWindow.focus();
+                    mainWindow.webContents.send('open-settings');
+                }
+            }
+        },
+        { type: 'separator' },
+        {
+            label: '❌ Salir',
+            click: () => {
+                app.quit();
+            }
+        }
+    ]);
+    
+    tray.setContextMenu(contextMenu);
+    
+    // Click en el ícono del tray para mostrar/ocultar la ventana
+    tray.on('click', () => {
+        if (mainWindow) {
+            if (mainWindow.isVisible()) {
+                mainWindow.hide();
+            } else {
+                if (mainWindow.isMinimized()) {
+                    mainWindow.restore();
+                }
+                mainWindow.show();
+                mainWindow.focus();
+            }
+        }
+    });
+    
+    console.log('📱 System tray created');
 }
