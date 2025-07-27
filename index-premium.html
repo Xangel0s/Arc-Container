@@ -38,6 +38,52 @@
             overflow: hidden;
             height: 100vh;
             -webkit-font-smoothing: antialiased;
+            /* Animaciones suaves para la ventana */
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Animación suave para cambios de tamaño de ventana */
+        .app-container {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Animación para el contenido cuando cambia el tamaño */
+        .main-content {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Animaciones para la barra de título */
+        .custom-titlebar {
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .titlebar-title {
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Efecto de hover mejorado para los controles de ventana */
+        .window-control {
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .window-control::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .window-control:hover::before {
+            width: 30px;
+            height: 30px;
         }
 
         .app-container {
@@ -336,7 +382,7 @@
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: opacity 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             backdrop-filter: blur(10px);
         }
 
@@ -354,12 +400,12 @@
             max-height: 80vh;
             overflow: hidden;
             box-shadow: var(--shadow);
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .modal-overlay.active .modal-content {
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
 
         .modal-header {
@@ -667,24 +713,24 @@
         }
 
         .app-manager-item {
-            animation: slideInFromTop 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            animation: slideInFromTop 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
-        /* Solo animar entrada la primera vez */
-        .app-manager-item.initial-load:nth-child(1) { animation-delay: 0.1s; }
-        .app-manager-item.initial-load:nth-child(2) { animation-delay: 0.15s; }
-        .app-manager-item.initial-load:nth-child(3) { animation-delay: 0.2s; }
-        .app-manager-item.initial-load:nth-child(4) { animation-delay: 0.25s; }
-        .app-manager-item.initial-load:nth-child(5) { animation-delay: 0.3s; }
-        .app-manager-item.initial-load:nth-child(6) { animation-delay: 0.35s; }
-        .app-manager-item.initial-load:nth-child(7) { animation-delay: 0.4s; }
-        .app-manager-item.initial-load:nth-child(8) { animation-delay: 0.45s; }
-        .app-manager-item.initial-load:nth-child(9) { animation-delay: 0.5s; }
-        .app-manager-item.initial-load:nth-child(10) { animation-delay: 0.55s; }
-        .app-manager-item.initial-load:nth-child(11) { animation-delay: 0.6s; }
-        .app-manager-item.initial-load:nth-child(12) { animation-delay: 0.65s; }
-        .app-manager-item.initial-load:nth-child(13) { animation-delay: 0.7s; }
-        .app-manager-item.initial-load:nth-child(14) { animation-delay: 0.75s; }
+        /* Solo animar entrada la primera vez - animaciones más rápidas */
+        .app-manager-item.initial-load:nth-child(1) { animation-delay: 0.05s; }
+        .app-manager-item.initial-load:nth-child(2) { animation-delay: 0.08s; }
+        .app-manager-item.initial-load:nth-child(3) { animation-delay: 0.11s; }
+        .app-manager-item.initial-load:nth-child(4) { animation-delay: 0.14s; }
+        .app-manager-item.initial-load:nth-child(5) { animation-delay: 0.17s; }
+        .app-manager-item.initial-load:nth-child(6) { animation-delay: 0.20s; }
+        .app-manager-item.initial-load:nth-child(7) { animation-delay: 0.23s; }
+        .app-manager-item.initial-load:nth-child(8) { animation-delay: 0.26s; }
+        .app-manager-item.initial-load:nth-child(9) { animation-delay: 0.29s; }
+        .app-manager-item.initial-load:nth-child(10) { animation-delay: 0.32s; }
+        .app-manager-item.initial-load:nth-child(11) { animation-delay: 0.35s; }
+        .app-manager-item.initial-load:nth-child(12) { animation-delay: 0.38s; }
+        .app-manager-item.initial-load:nth-child(13) { animation-delay: 0.41s; }
+        .app-manager-item.initial-load:nth-child(14) { animation-delay: 0.44s; }
 
         .app-manager-item {
             display: flex;
@@ -1549,7 +1595,6 @@
 
 
     <script>
-        // ================ WINDOW CONTROLS ================
         function minimizeWindow() {
             const { ipcRenderer } = require('electron');
             ipcRenderer.invoke('minimize-window');
@@ -1557,17 +1602,38 @@
 
         function toggleMaximize() {
             const { ipcRenderer } = require('electron');
+            
+            // Agregar animación suave antes de cambiar el estado
+            const appContainer = document.querySelector('.app-container');
+            const mainContent = document.querySelector('.main-content');
+            
+            // Aplicar transición suave
+            appContainer.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            mainContent.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            
             ipcRenderer.invoke('toggle-maximize').then(() => {
                 // Actualizar el icono del botón
                 const maximizeBtn = document.querySelector('.window-control.maximize i');
                 if (maximizeBtn) {
                     // El estado se actualizará cuando la ventana responda
                     setTimeout(() => {
-                        const { remote } = require('electron');
-                        if (remote && remote.getCurrentWindow) {
-                            const isMaximized = remote.getCurrentWindow().isMaximized();
+                        // Usar ipcRenderer para obtener el estado de la ventana
+                        ipcRenderer.invoke('get-window-state').then((isMaximized) => {
                             maximizeBtn.className = isMaximized ? 'fas fa-compress' : 'fas fa-expand';
-                        }
+                            
+                            // Agregar efecto visual adicional
+                            if (isMaximized) {
+                                appContainer.style.transform = 'scale(1.02)';
+                                setTimeout(() => {
+                                    appContainer.style.transform = 'scale(1)';
+                                }, 150);
+                            } else {
+                                appContainer.style.transform = 'scale(0.98)';
+                                setTimeout(() => {
+                                    appContainer.style.transform = 'scale(1)';
+                                }, 150);
+                            }
+                        });
                     }, 100);
                 }
             });
@@ -1578,7 +1644,40 @@
             ipcRenderer.invoke('close-window');
         }
 
-        // ================ APPLICATION CLASS ================
+        function setupWindowDragging() {
+            const titleBar = document.querySelector('.custom-titlebar');
+            const titleBarTitle = document.querySelector('.titlebar-title');
+            
+            if (titleBar && titleBarTitle) {
+                // Hacer que toda la barra de título sea arrastrable
+                titleBar.style.cursor = 'grab';
+                
+                // Efecto visual cuando se arrastra
+                titleBar.addEventListener('mousedown', (e) => {
+                    // Solo activar si no se hace clic en los controles de ventana
+                    if (!e.target.closest('.window-controls')) {
+                        titleBar.style.cursor = 'grabbing';
+                        titleBar.style.transform = 'scale(0.98)';
+                        
+                        // Restaurar después de soltar
+                        setTimeout(() => {
+                            titleBar.style.cursor = 'grab';
+                            titleBar.style.transform = 'scale(1)';
+                        }, 200);
+                    }
+                });
+                
+                // Efecto hover en el título
+                titleBarTitle.addEventListener('mouseenter', () => {
+                    titleBarTitle.style.transform = 'scale(1.02)';
+                });
+                
+                titleBarTitle.addEventListener('mouseleave', () => {
+                    titleBarTitle.style.transform = 'scale(1)';
+                });
+            }
+        }
+
         class ArcContainerPremium {
             constructor() {
                 // Configuración predefinida de aplicaciones
@@ -1734,7 +1833,6 @@
                 this.init();
             }
 
-            // ================ CONFIGURACIÓN DE APLICACIONES ================
             loadAppsConfig() {
                 try {
                     const saved = localStorage.getItem('arc-container-apps');
@@ -2019,7 +2117,6 @@
                 this.setupNotifications();
             }
 
-            // ================ SISTEMA DE NOTIFICACIONES ================
             setupNotifications() {
                 // Escuchar eventos de foco de servicio desde notificaciones
                 if (window.electronAPI && window.electronAPI.onFocusService) {
@@ -2057,7 +2154,6 @@
                 }, 3000);
             }
 
-            // ================ SISTEMA DE TOAST ================
             showToast(title, body, serviceId = 'arc-container', duration = 4000) {
                 const container = document.getElementById('toastContainer');
                 if (!container) return;
@@ -2331,7 +2427,6 @@
                 document.getElementById('settingsModal').classList.add('active');
             }
 
-            // ================ ADMINISTRADOR DE APLICACIONES ================
             openAppManager() {
                 console.log('📱 Opening app manager...');
                 
@@ -2383,12 +2478,12 @@
                     container.appendChild(item);
                 });
 
-                // Remover la clase initial-load después de la animación
+                // Remover la clase initial-load después de la animación (más rápido)
                 setTimeout(() => {
                     document.querySelectorAll('.app-manager-item.initial-load').forEach(item => {
                         item.classList.remove('initial-load');
                     });
-                }, 1000);
+                }, 500);
             }
 
             // Método optimizado para actualizar solo el estado del toggle
@@ -2821,8 +2916,6 @@
                 this.showNotification('Configuración restablecida', 'info');
             }
 
-            // ================ MÉTODOS FALTANTES DEL ADMINISTRADOR DE APLICACIONES ================
-            
             toggleApp(appId) {
                 const app = this.services.find(s => s.id === appId);
                 if (!app) {
@@ -3049,6 +3142,9 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             window.arcContainer = new ArcContainerPremium();
+            
+            // Configurar funcionalidad de arrastrar ventana
+            setupWindowDragging();
             
             // Edit modal events
             document.getElementById('saveEditApp').addEventListener('click', () => {

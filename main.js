@@ -1,46 +1,28 @@
-const { app, BrowserWindow, ipcMain, Notification, nativeImage, Tray, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, nativeImage, Tray, Menu, globalShortcut, screen } = require('electron');
 const path = require('path');
 const iconConfig = require('./icon-config');
-
-// Configuración EXACTA de Rambox Community (Electron 13.6.3) - CONFIGURACIÓN MÍNIMA QUE FUNCIONA
-// SOLO el switch crítico que usa Rambox para solucionar CSP
-app.commandLine.appendSwitch('--disable-features', 'CrossOriginOpenerPolicy');
-
-// Importar electron-store de forma compatible con Electron 13.x
 const Store = require('electron-store');
-const store = new Store();
 
-// Suprimir warnings de seguridad en desarrollo
+app.commandLine.appendSwitch('--disable-features', 'CrossOriginOpenerPolicy');
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
-// Configurar nombre de la aplicación
-app.setName('Arc Container');
-app.setAppUserModelId('com.arccontainer.app.v2');
+const store = new Store();
+const APP_ID = 'com.arccontainer.app.v2';
 
-// Configurar el icono de la aplicación para Windows
+app.setName('Arc Container');
+app.setAppUserModelId(APP_ID);
+
 if (process.platform === 'win32') {
     try {
         const iconPath = path.join(__dirname, 'assets', 'logo.ico');
         const fs = require('fs');
         if (fs.existsSync(iconPath)) {
-            app.setAppUserModelId('com.arccontainer.app.v2');
-            
-            // Configurar el icono de la aplicación a nivel global
             app.setPath('userData', path.join(app.getPath('appData'), 'Arc Container'));
-            
             console.log('✅ Windows app icon configured');
-            console.log('📁 Icon path verified:', iconPath);
-        } else {
-            console.log('❌ Icon file not found at startup:', iconPath);
         }
     } catch (error) {
         console.log('⚠️ Could not configure Windows app icon:', error.message);
     }
-}
-
-// Manejar cuando se inicia desde la barra de inicio
-if (process.platform === 'win32') {
-    app.setAppUserModelId('com.arccontainer.app.v2');
 }
 
 // Prevenir múltiples instancias
@@ -55,43 +37,32 @@ let mainWindow;
 let tray;
 
 function createWindow() {
-    // Crear la ventana principal
     mainWindow = new BrowserWindow({
-        width: 1400,
-        height: 900,
-        minWidth: 1000,
-        minHeight: 700,
-        frame: false, // Remover marco por defecto para diseño personalizado
-        titleBarStyle: 'hidden', // Ocultar barra de título nativa
-        backgroundColor: '#0f0f0f', // Color de fondo oscuro
-        vibrancy: 'dark', // Efecto de transparencia (macOS)
+        width: 1200,
+        height: 800,
+        minWidth: 800,
+        minHeight: 600,
+        frame: false,
+        titleBarStyle: 'hidden',
+        backgroundColor: '#0f0f0f',
+        vibrancy: 'dark',
         transparent: false,
         webPreferences: {
-            // Configuración EXACTA de Rambox Community - Solo lo esencial que funciona
-            enableRemoteModule: true, // Rambox usa true
-            plugins: true, // Rambox usa true - IMPORTANTE para WASM
-            partition: 'persist:arc-container', // Como Rambox usa persist:rambox
-            nodeIntegration: true, // Rambox usa true
-            webviewTag: true, // Rambox usa true
-            contextIsolation: false, // Rambox usa false
-            spellcheck: false // Rambox usa false
-            // SIN webSecurity: false - Rambox NO lo usa
-            // SIN allowRunningInsecureContent - Rambox NO lo usa  
-            // SIN experimentalFeatures - Rambox NO lo usa
+            enableRemoteModule: true,
+            plugins: true,
+            partition: 'persist:arc-container',
+            nodeIntegration: true,
+            webviewTag: true,
+            contextIsolation: false,
+            spellcheck: false
         },
-        // Usar el logo de la aplicación para la barra de tareas
-        icon: path.join(__dirname, 'assets', 'icon.ico'), // Logo principal de la aplicación
-        show: false, // No mostrar hasta que esté listo
-        roundedCorners: true, // Esquinas redondeadas (Windows 11)
-        shadow: true, // Sombra de ventana
-        thickFrame: false, // Marco delgado
-        skipTaskbar: false, // Mostrar en la barra de tareas
-        title: 'Arc Container', // Título para la barra de tareas
-        // Configuración específica para Windows
-        ...(process.platform === 'win32' && {
-            icon: path.join(__dirname, 'assets', 'icon.ico'),
-            show: false
-        })
+        icon: path.join(__dirname, 'assets', 'icon.ico'),
+        show: false,
+        roundedCorners: true,
+        shadow: true,
+        thickFrame: false,
+        skipTaskbar: false,
+        title: 'Arc Container'
     });
 
     // Cargar el archivo HTML principal
@@ -136,32 +107,17 @@ function createWindow() {
     
     // Función para configurar el icono de la barra de tareas
     function configureTaskbarIcon() {
-        if (process.platform === 'win32') {
+        if (process.platform === 'win32' && iconConfig.exists()) {
             try {
-                if (iconConfig.exists()) {
-                    console.log('🔧 Configuring taskbar icon...');
-                    const iconInfo = iconConfig.getInfo();
-                    console.log('📁 Icon info:', iconInfo);
-                    
-                    // Configurar el icono para la barra de tareas específicamente PRIMERO
-                    mainWindow.setAppDetails(iconConfig.windowsConfig);
-                    
-                    // Luego forzar actualización del icono
+                mainWindow.setAppDetails(iconConfig.windowsConfig);
+                mainWindow.setIcon(iconConfig.iconPath);
+                mainWindow.flashFrame(false);
+                mainWindow.focus();
+                
+                setTimeout(() => {
                     mainWindow.setIcon(iconConfig.iconPath);
-                    
-                    // Forzar actualización de la barra de tareas
-                    mainWindow.flashFrame(false);
-                    mainWindow.focus();
-                    
-                    // Intentar múltiples veces para asegurar que se aplique
-                    setTimeout(() => {
-                        mainWindow.setIcon(iconConfig.iconPath);
-                        console.log('✅ Taskbar icon configured successfully');
-                    }, 500);
-                    
-                } else {
-                    console.log('❌ Icon file not found:', iconConfig.iconPath);
-                }
+                    console.log('✅ Taskbar icon configured successfully');
+                }, 500);
             } catch (error) {
                 console.log('⚠️ Could not configure taskbar icon:', error.message);
             }
@@ -224,10 +180,33 @@ function createWindow() {
     mainWindow.on('unmaximize', () => {
         console.log('📱 Window unmaximized');
         mainWindow.webContents.send('window-state-changed', false);
+        
+        // Ajustar el tamaño cuando se restaura para que sea más pequeño
+        setTimeout(() => {
+            if (!mainWindow.isMaximized()) {
+                const { screen } = require('electron');
+                const primaryDisplay = screen.getPrimaryDisplay();
+                const { width, height } = primaryDisplay.workAreaSize;
+                
+                // Calcular un tamaño más pequeño (como una ventana de Chrome)
+                const newWidth = Math.min(1100, width * 0.8);
+                const newHeight = Math.min(750, height * 0.8);
+                
+                // Centrar la ventana
+                const x = Math.round((width - newWidth) / 2);
+                const y = Math.round((height - newHeight) / 2);
+                
+                mainWindow.setBounds({ x, y, width: newWidth, height: newHeight });
+                console.log('📐 Window resized to:', newWidth, 'x', newHeight);
+            }
+        }, 100);
     });
 
     // Crear el system tray
     createTray();
+
+    // Configurar atajos de teclado para mover la ventana
+    setupWindowMovementShortcuts();
 
     // Configuración de webviews EXACTA de Rambox - Solo lo esencial
     mainWindow.webContents.on('will-attach-webview', (event, webPreferences, params) => {
@@ -359,10 +338,19 @@ ipcMain.handle('toggle-maximize', () => {
     if (mainWindow) {
         if (mainWindow.isMaximized()) {
             mainWindow.unmaximize();
+            console.log('📱 Window restored from maximized state');
         } else {
             mainWindow.maximize();
+            console.log('📱 Window maximized');
         }
     }
+});
+
+ipcMain.handle('get-window-state', () => {
+    if (mainWindow) {
+        return mainWindow.isMaximized();
+    }
+    return false;
 });
 
 ipcMain.handle('close-window', () => {
@@ -587,31 +575,22 @@ function getDefaultConfig() {
 // ================ SYSTEM TRAY ================
 
 function createTray() {
-    // Crear ícono del tray con ícono por defecto para mejor compatibilidad
     let trayIcon;
+    const iconPath = path.join(__dirname, 'assets', 'logo.ico');
     
     try {
-        // Intentar usar el logo principal de la aplicación
-        const iconPath = path.join(__dirname, 'assets', 'logo.ico');
-        console.log('🔍 Trying to load tray icon from:', iconPath);
-        
-        // Verificar si el archivo existe
         const fs = require('fs');
-        if (!fs.existsSync(iconPath)) {
+        if (fs.existsSync(iconPath)) {
+            trayIcon = nativeImage.createFromPath(iconPath);
+            console.log('✅ Using main application logo for tray');
+        } else {
             throw new Error('Icon file does not exist');
         }
-        
-        trayIcon = nativeImage.createFromPath(iconPath);
-        console.log('✅ Using main application logo for tray');
     } catch (error) {
-        console.log('⚠️ Logo not found or invalid, using default Electron icon. Error:', error.message);
-        // Usar ícono por defecto de Electron
         trayIcon = nativeImage.createEmpty();
     }
     
-    // En Windows, el ícono del tray debe ser de 16x16 píxeles
     const trayIcon16 = trayIcon.resize({ width: 16, height: 16 });
-    
     tray = new Tray(trayIcon16);
     tray.setToolTip('Arc Container - Centro de aplicaciones web');
     
@@ -708,4 +687,56 @@ function createTray() {
     });
     
     console.log('📱 System tray created');
+}
+
+function setupWindowMovementShortcuts() {
+    if (process.platform !== 'win32') return;
+
+    function moveWindow(direction) {
+        if (!mainWindow || mainWindow.isMaximized()) return;
+
+        const primaryDisplay = screen.getPrimaryDisplay();
+        const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+        const currentBounds = mainWindow.getBounds();
+        
+        let newX = currentBounds.x;
+        let newY = currentBounds.y;
+        const step = 50;
+
+        switch (direction) {
+            case 'up':
+                newY = Math.max(0, currentBounds.y - step);
+                break;
+            case 'down':
+                newY = Math.min(screenHeight - currentBounds.height, currentBounds.y + step);
+                break;
+            case 'left':
+                newX = Math.max(0, currentBounds.x - step);
+                break;
+            case 'right':
+                newX = Math.min(screenWidth - currentBounds.width, currentBounds.x + step);
+                break;
+        }
+
+        mainWindow.setPosition(newX, newY);
+        console.log(`🔄 Window moved ${direction}: (${newX}, ${newY})`);
+    }
+
+    const shortcuts = [
+        { combo: 'Alt+Up', direction: 'up' },
+        { combo: 'Alt+Down', direction: 'down' },
+        { combo: 'Alt+Left', direction: 'left' },
+        { combo: 'Alt+Right', direction: 'right' },
+        { combo: 'CommandOrControl+Shift+Up', direction: 'up' },
+        { combo: 'CommandOrControl+Shift+Down', direction: 'down' },
+        { combo: 'CommandOrControl+Shift+Left', direction: 'left' },
+        { combo: 'CommandOrControl+Shift+Right', direction: 'right' }
+    ];
+
+    shortcuts.forEach(({ combo, direction }) => {
+        const registered = globalShortcut.register(combo, () => moveWindow(direction));
+        if (registered) {
+            console.log(`✅ Shortcut registered: ${combo} (move ${direction})`);
+        }
+    });
 }
