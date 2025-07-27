@@ -11,6 +11,36 @@
     "build-mac": "electron-builder --mac",
     "build-linux": "electron-builder --linux"
   },
+  "build": {
+    "appId": "com.arccontainer.app.v2",
+    "productName": "Arc Container",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
   "keywords": [
     "electron",
     "webview",

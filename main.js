@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, Notification, nativeImage, Tray, Menu } = require('electron');
 const path = require('path');
+const iconConfig = require('./icon-config');
 
 // Configuración EXACTA de Rambox Community (Electron 13.6.3) - CONFIGURACIÓN MÍNIMA QUE FUNCIONA
 // SOLO el switch crítico que usa Rambox para solucionar CSP
@@ -14,11 +15,32 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
 
 // Configurar nombre de la aplicación
 app.setName('Arc Container');
-app.setAppUserModelId('com.arccontainer.app');
+app.setAppUserModelId('com.arccontainer.app.v2');
+
+// Configurar el icono de la aplicación para Windows
+if (process.platform === 'win32') {
+    try {
+        const iconPath = path.join(__dirname, 'assets', 'logo.ico');
+        const fs = require('fs');
+        if (fs.existsSync(iconPath)) {
+            app.setAppUserModelId('com.arccontainer.app.v2');
+            
+            // Configurar el icono de la aplicación a nivel global
+            app.setPath('userData', path.join(app.getPath('appData'), 'Arc Container'));
+            
+            console.log('✅ Windows app icon configured');
+            console.log('📁 Icon path verified:', iconPath);
+        } else {
+            console.log('❌ Icon file not found at startup:', iconPath);
+        }
+    } catch (error) {
+        console.log('⚠️ Could not configure Windows app icon:', error.message);
+    }
+}
 
 // Manejar cuando se inicia desde la barra de inicio
 if (process.platform === 'win32') {
-    app.setAppUserModelId('com.arccontainer.app');
+    app.setAppUserModelId('com.arccontainer.app.v2');
 }
 
 // Prevenir múltiples instancias
@@ -57,14 +79,19 @@ function createWindow() {
             // SIN allowRunningInsecureContent - Rambox NO lo usa  
             // SIN experimentalFeatures - Rambox NO lo usa
         },
-        // Usar ícono por defecto de Electron para mejor compatibilidad
-        // icon: path.join(__dirname, 'assets', 'image-removebg-preview.png'), // Logo principal de la aplicación
+        // Usar el logo de la aplicación para la barra de tareas
+        icon: path.join(__dirname, 'assets', 'icon.ico'), // Logo principal de la aplicación
         show: false, // No mostrar hasta que esté listo
         roundedCorners: true, // Esquinas redondeadas (Windows 11)
         shadow: true, // Sombra de ventana
         thickFrame: false, // Marco delgado
         skipTaskbar: false, // Mostrar en la barra de tareas
-        title: 'Arc Container' // Título para la barra de tareas
+        title: 'Arc Container', // Título para la barra de tareas
+        // Configuración específica para Windows
+        ...(process.platform === 'win32' && {
+            icon: path.join(__dirname, 'assets', 'icon.ico'),
+            show: false
+        })
     });
 
     // Cargar el archivo HTML principal
@@ -77,19 +104,69 @@ function createWindow() {
         
         // Configurar para que aparezca en la barra de inicio
         if (process.platform === 'win32') {
-                            // Configurar detalles de la aplicación para Windows
-                // mainWindow.setAppDetails({
-                //     appId: 'com.arccontainer.app',
-                //     appIconPath: path.join(__dirname, 'assets', 'image-removebg-preview.png'),
-                //     appIconIndex: 0,
-                //     relaunchDisplayName: 'Arc Container',
-                //     relaunchCommand: process.execPath
-                // });
+            try {
+                // Configurar detalles de la aplicación para Windows
+                const iconPath = path.join(__dirname, 'assets', 'logo.ico');
+                const fs = require('fs');
+                if (fs.existsSync(iconPath)) {
+                    mainWindow.setAppDetails({
+                        appId: 'com.arccontainer.app',
+                        appIconPath: iconPath,
+                        appIconIndex: 0,
+                        relaunchDisplayName: 'Arc Container',
+                        relaunchCommand: process.execPath
+                    });
+                    console.log('✅ Windows taskbar icon configured');
+                } else {
+                    console.log('⚠️ Icon file not found for taskbar');
+                }
+            } catch (error) {
+                console.log('⚠️ Could not configure Windows taskbar icon:', error.message);
+            }
         }
         
         // Mostrar notificación de bienvenida después de un delay
         setTimeout(showWelcomeNotification, 3000);
+        
+        // Configurar icono de la barra de tareas después de que la ventana esté completamente cargada
+        setTimeout(() => {
+            configureTaskbarIcon();
+        }, 2000);
     });
+    
+    // Función para configurar el icono de la barra de tareas
+    function configureTaskbarIcon() {
+        if (process.platform === 'win32') {
+            try {
+                if (iconConfig.exists()) {
+                    console.log('🔧 Configuring taskbar icon...');
+                    const iconInfo = iconConfig.getInfo();
+                    console.log('📁 Icon info:', iconInfo);
+                    
+                    // Configurar el icono para la barra de tareas específicamente PRIMERO
+                    mainWindow.setAppDetails(iconConfig.windowsConfig);
+                    
+                    // Luego forzar actualización del icono
+                    mainWindow.setIcon(iconConfig.iconPath);
+                    
+                    // Forzar actualización de la barra de tareas
+                    mainWindow.flashFrame(false);
+                    mainWindow.focus();
+                    
+                    // Intentar múltiples veces para asegurar que se aplique
+                    setTimeout(() => {
+                        mainWindow.setIcon(iconConfig.iconPath);
+                        console.log('✅ Taskbar icon configured successfully');
+                    }, 500);
+                    
+                } else {
+                    console.log('❌ Icon file not found:', iconConfig.iconPath);
+                }
+            } catch (error) {
+                console.log('⚠️ Could not configure taskbar icon:', error.message);
+            }
+        }
+    }
 
     // Prevenir cierre accidental
     mainWindow.on('close', (event) => {
@@ -515,11 +592,19 @@ function createTray() {
     
     try {
         // Intentar usar el logo principal de la aplicación
-        const iconPath = path.join(__dirname, 'assets', 'image-removebg-preview.png');
+        const iconPath = path.join(__dirname, 'assets', 'logo.ico');
+        console.log('🔍 Trying to load tray icon from:', iconPath);
+        
+        // Verificar si el archivo existe
+        const fs = require('fs');
+        if (!fs.existsSync(iconPath)) {
+            throw new Error('Icon file does not exist');
+        }
+        
         trayIcon = nativeImage.createFromPath(iconPath);
         console.log('✅ Using main application logo for tray');
     } catch (error) {
-        console.log('⚠️ Logo not found, using default Electron icon');
+        console.log('⚠️ Logo not found or invalid, using default Electron icon. Error:', error.message);
         // Usar ícono por defecto de Electron
         trayIcon = nativeImage.createEmpty();
     }
