@@ -382,7 +382,7 @@
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: opacity 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             backdrop-filter: blur(10px);
         }
 
@@ -401,7 +401,7 @@
             overflow: hidden;
             box-shadow: var(--shadow);
             transform: translateY(20px) scale(0.95);
-            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .modal-overlay.active .modal-content {
@@ -848,24 +848,61 @@
         }
 
         .app-manager-item {
-            animation: slideInFromTop 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            animation: slideInFromTop 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
-        /* Solo animar entrada la primera vez - animaciones más rápidas */
-        .app-manager-item.initial-load:nth-child(1) { animation-delay: 0.05s; }
-        .app-manager-item.initial-load:nth-child(2) { animation-delay: 0.08s; }
-        .app-manager-item.initial-load:nth-child(3) { animation-delay: 0.11s; }
-        .app-manager-item.initial-load:nth-child(4) { animation-delay: 0.14s; }
-        .app-manager-item.initial-load:nth-child(5) { animation-delay: 0.17s; }
-        .app-manager-item.initial-load:nth-child(6) { animation-delay: 0.20s; }
-        .app-manager-item.initial-load:nth-child(7) { animation-delay: 0.23s; }
-        .app-manager-item.initial-load:nth-child(8) { animation-delay: 0.26s; }
-        .app-manager-item.initial-load:nth-child(9) { animation-delay: 0.29s; }
-        .app-manager-item.initial-load:nth-child(10) { animation-delay: 0.32s; }
-        .app-manager-item.initial-load:nth-child(11) { animation-delay: 0.35s; }
-        .app-manager-item.initial-load:nth-child(12) { animation-delay: 0.38s; }
-        .app-manager-item.initial-load:nth-child(13) { animation-delay: 0.41s; }
-        .app-manager-item.initial-load:nth-child(14) { animation-delay: 0.44s; }
+        /* Animaciones de entrada súper rápidas - efecto visual instantáneo */
+        .app-manager-item.initial-load:nth-child(1) { animation-delay: 0.01s; }
+        .app-manager-item.initial-load:nth-child(2) { animation-delay: 0.015s; }
+        .app-manager-item.initial-load:nth-child(3) { animation-delay: 0.02s; }
+        .app-manager-item.initial-load:nth-child(4) { animation-delay: 0.025s; }
+        .app-manager-item.initial-load:nth-child(5) { animation-delay: 0.03s; }
+        .app-manager-item.initial-load:nth-child(6) { animation-delay: 0.035s; }
+        .app-manager-item.initial-load:nth-child(7) { animation-delay: 0.04s; }
+        .app-manager-item.initial-load:nth-child(8) { animation-delay: 0.045s; }
+        .app-manager-item.initial-load:nth-child(9) { animation-delay: 0.05s; }
+        .app-manager-item.initial-load:nth-child(10) { animation-delay: 0.055s; }
+        .app-manager-item.initial-load:nth-child(11) { animation-delay: 0.06s; }
+        .app-manager-item.initial-load:nth-child(12) { animation-delay: 0.065s; }
+        .app-manager-item.initial-load:nth-child(13) { animation-delay: 0.07s; }
+        .app-manager-item.initial-load:nth-child(14) { animation-delay: 0.075s; }
+
+        /* Skeleton loading para efecto visual instantáneo */
+        .app-manager-item.skeleton {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            opacity: 0.7;
+        }
+
+        .skeleton-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(90deg, var(--border-color) 25%, var(--bg-tertiary) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+
+        .skeleton-text {
+            height: 16px;
+            background: linear-gradient(90deg, var(--border-color) 25%, var(--bg-tertiary) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+
+        .skeleton-text:last-child {
+            width: 60%;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
 
         .app-manager-item {
             display: flex;
@@ -2061,10 +2098,10 @@
 
             renderServices() {
                 const container = document.getElementById('servicesContainer');
-                container.innerHTML = ''; // Limpiar contenedor
-                
-                // Solo renderizar servicios habilitados
                 const enabledServices = this.getEnabledServices();
+                
+                // Usar DocumentFragment para mejor rendimiento
+                const fragment = document.createDocumentFragment();
                 
                 enabledServices.forEach(service => {
                     const item = document.createElement('div');
@@ -2076,18 +2113,35 @@
                         item.style.setProperty('--service-color', service.backgroundColor);
                     }
                     
-                    item.innerHTML = `
-                        <i class="service-icon ${service.icon}"></i>
-                        <div class="tooltip">${service.name}</div>
-                        ${service.notifications > 0 ? `<div class="service-badge">${service.notifications}</div>` : ''}
-                    `;
+                    // Crear elementos individualmente para mejor rendimiento
+                    const icon = document.createElement('i');
+                    icon.className = `service-icon ${service.icon}`;
+                    
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'tooltip';
+                    tooltip.textContent = service.name;
+                    
+                    item.appendChild(icon);
+                    item.appendChild(tooltip);
+                    
+                    // Agregar badge solo si hay notificaciones
+                    if (service.notifications > 0) {
+                        const badge = document.createElement('div');
+                        badge.className = 'service-badge';
+                        badge.textContent = service.notifications;
+                        item.appendChild(badge);
+                    }
                     
                     item.addEventListener('click', () => {
                         this.switchToService(service.id);
                     });
                     
-                    container.appendChild(item);
+                    fragment.appendChild(item);
                 });
+                
+                // Limpiar y agregar todo de una vez
+                container.innerHTML = '';
+                container.appendChild(fragment);
                 
                 console.log(`📱 Rendered ${enabledServices.length} enabled services`);
             }
@@ -2565,60 +2619,111 @@
             openAppManager() {
                 console.log('📱 Opening app manager...');
                 
-                // Solo renderizar si es la primera vez o si no hay elementos
+                // Mostrar modal inmediatamente
+                const modal = document.getElementById('appManagerModal');
+                modal.classList.add('active');
+                
+                // Renderizar inmediatamente si no hay contenido
                 const container = document.getElementById('appsManagerList');
                 if (!container.children.length) {
+                    // Renderizar directamente sin skeleton para máxima velocidad
                     this.renderAppManager();
+                    this.setupAppManagerEvents();
+                } else {
+                    this.setupAppManagerEvents();
                 }
-                
-                document.getElementById('appManagerModal').classList.add('active');
-                this.setupAppManagerEvents();
             }
 
             renderAppManager() {
                 const container = document.getElementById('appsManagerList');
-                container.innerHTML = '';
-
+                
+                // Usar DocumentFragment para mejor rendimiento
+                const fragment = document.createDocumentFragment();
+                
+                // Crear todos los elementos de una vez
                 this.services.forEach(app => {
                     const item = document.createElement('div');
                     item.className = `app-manager-item ${!app.enabled ? 'disabled' : ''} initial-load`;
                     item.setAttribute('data-app-id', app.id);
 
-                    item.innerHTML = `
-                        <div class="app-icon-preview" style="background-color: ${app.backgroundColor || '#007AFF'}">
-                            <i class="${app.icon}${app.id.includes('whatsapp-business') ? ' business-icon' : ''}"></i>
-                        </div>
-                        <div class="app-info">
-                            <div class="app-name">${app.name}</div>
-                            <div class="app-url">${app.url}</div>
-                        </div>
-                        <div class="app-controls">
-                            <div class="app-toggle ${app.enabled ? 'active' : ''}" data-app-id="${app.id}">
-                                <div class="app-toggle-handle"></div>
-                            </div>
-                            <button class="app-action-btn edit" data-app-id="${app.id}" title="Editar">
-                                <i class="fas fa-pen"></i>
-                            </button>
-                            ${!app.builtin ? `
-                                <button class="app-action-btn delete" data-app-id="${app.id}" title="Eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            ` : ''}
-                            <button class="app-action-btn" data-app-id="${app.id}" title="Duplicar">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                        </div>
-                    `;
+                    // Crear elementos individualmente en lugar de usar innerHTML
+                    const iconPreview = document.createElement('div');
+                    iconPreview.className = 'app-icon-preview';
+                    iconPreview.style.backgroundColor = app.backgroundColor || '#007AFF';
+                    
+                    const icon = document.createElement('i');
+                    icon.className = app.icon + (app.id.includes('whatsapp-business') ? ' business-icon' : '');
+                    iconPreview.appendChild(icon);
 
-                    container.appendChild(item);
+                    const appInfo = document.createElement('div');
+                    appInfo.className = 'app-info';
+                    
+                    const appName = document.createElement('div');
+                    appName.className = 'app-name';
+                    appName.textContent = app.name;
+                    
+                    const appUrl = document.createElement('div');
+                    appUrl.className = 'app-url';
+                    appUrl.textContent = app.url;
+                    
+                    appInfo.appendChild(appName);
+                    appInfo.appendChild(appUrl);
+
+                    const appControls = document.createElement('div');
+                    appControls.className = 'app-controls';
+                    
+                    const toggle = document.createElement('div');
+                    toggle.className = `app-toggle ${app.enabled ? 'active' : ''}`;
+                    toggle.setAttribute('data-app-id', app.id);
+                    
+                    const toggleHandle = document.createElement('div');
+                    toggleHandle.className = 'app-toggle-handle';
+                    toggle.appendChild(toggleHandle);
+                    
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'app-action-btn edit';
+                    editBtn.setAttribute('data-app-id', app.id);
+                    editBtn.title = 'Editar';
+                    editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+                    
+                    const duplicateBtn = document.createElement('button');
+                    duplicateBtn.className = 'app-action-btn';
+                    duplicateBtn.setAttribute('data-app-id', app.id);
+                    duplicateBtn.title = 'Duplicar';
+                    duplicateBtn.innerHTML = '<i class="fas fa-copy"></i>';
+                    
+                    appControls.appendChild(toggle);
+                    appControls.appendChild(editBtn);
+                    
+                    if (!app.builtin) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'app-action-btn delete';
+                        deleteBtn.setAttribute('data-app-id', app.id);
+                        deleteBtn.title = 'Eliminar';
+                        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                        appControls.appendChild(deleteBtn);
+                    }
+                    
+                    appControls.appendChild(duplicateBtn);
+
+                    // Ensamblar el item
+                    item.appendChild(iconPreview);
+                    item.appendChild(appInfo);
+                    item.appendChild(appControls);
+                    
+                    fragment.appendChild(item);
                 });
 
-                // Remover la clase initial-load después de la animación (más rápido)
+                // Limpiar y agregar todo de una vez
+                container.innerHTML = '';
+                container.appendChild(fragment);
+
+                // Remover la clase initial-load después de la animación (súper optimizado)
                 setTimeout(() => {
                     document.querySelectorAll('.app-manager-item.initial-load').forEach(item => {
                         item.classList.remove('initial-load');
                     });
-                }, 500);
+                }, 100);
             }
 
             // Método optimizado para actualizar solo el estado del toggle
@@ -2639,19 +2744,15 @@
             }
 
             setupAppManagerEvents() {
-                // Solo configurar eventos para elementos dinámicos
                 const modal = document.getElementById('appManagerModal');
-                
-                // Delegación de eventos para los elementos dinámicos
                 const container = document.getElementById('appsManagerList');
-                if (container) {
-                    // Remover listener anterior si existe
-                    if (container._clickHandler) {
-                        container.removeEventListener('click', container._clickHandler);
-                    }
+                
+                // Solo configurar eventos una vez
+                if (container && !container._eventsConfigured) {
+                    container._eventsConfigured = true;
                     
-                    // Crear nuevo handler
-                    container._clickHandler = (e) => {
+                    // Delegación de eventos optimizada
+                    container.addEventListener('click', (e) => {
                         const appId = e.target.closest('[data-app-id]')?.getAttribute('data-app-id');
                         if (!appId) return;
 
@@ -2664,19 +2765,18 @@
                         } else if (e.target.closest('.app-action-btn:not(.delete):not(.edit)')) {
                             this.duplicateApp(appId);
                         }
-                    };
-                    
-                    container.addEventListener('click', container._clickHandler);
+                    });
                 }
 
-
-
-                // Cerrar modal al hacer click fuera
-                modal.addEventListener('click', (e) => {
-                    if (e.target.id === 'appManagerModal') {
-                        this.closeAppManagerModal();
-                    }
-                });
+                // Cerrar modal al hacer click fuera (solo una vez)
+                if (!modal._closeEventConfigured) {
+                    modal._closeEventConfigured = true;
+                    modal.addEventListener('click', (e) => {
+                        if (e.target.id === 'appManagerModal') {
+                            this.closeAppManagerModal();
+                        }
+                    });
+                }
             }
 
             openEditAppModal(appId) {
