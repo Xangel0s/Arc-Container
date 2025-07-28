@@ -181,23 +181,34 @@ function createWindow() {
         console.log('📱 Window unmaximized');
         mainWindow.webContents.send('window-state-changed', false);
         
-        // Ajustar el tamaño cuando se restaura para que sea más pequeño
         setTimeout(() => {
             if (!mainWindow.isMaximized()) {
-                const { screen } = require('electron');
-                const primaryDisplay = screen.getPrimaryDisplay();
-                const { width, height } = primaryDisplay.workAreaSize;
-                
-                // Calcular un tamaño más pequeño (como una ventana de Chrome)
-                const newWidth = Math.min(1100, width * 0.8);
-                const newHeight = Math.min(750, height * 0.8);
-                
-                // Centrar la ventana
-                const x = Math.round((width - newWidth) / 2);
-                const y = Math.round((height - newHeight) / 2);
-                
-                mainWindow.setBounds({ x, y, width: newWidth, height: newHeight });
-                console.log('📐 Window resized to:', newWidth, 'x', newHeight);
+                try {
+                    const { screen } = require('electron');
+                    const primaryDisplay = screen.getPrimaryDisplay();
+                    const workArea = primaryDisplay && primaryDisplay.workAreaSize ? primaryDisplay.workAreaSize : { width: 1200, height: 800 };
+                    const width = Number.isFinite(workArea.width) ? workArea.width : 1200;
+                    const height = Number.isFinite(workArea.height) ? workArea.height : 800;
+
+                    const newWidth = Math.min(1100, width * 0.8);
+                    const newHeight = Math.min(750, height * 0.8);
+                    const x = Math.round((width - newWidth) / 2);
+                    const y = Math.round((height - newHeight) / 2);
+
+                    if (
+                        Number.isFinite(newWidth) &&
+                        Number.isFinite(newHeight) &&
+                        Number.isFinite(x) &&
+                        Number.isFinite(y)
+                    ) {
+                        mainWindow.setBounds({ x, y, width: newWidth, height: newHeight });
+                        console.log('📐 Window resized to:', newWidth, 'x', newHeight);
+                    } else {
+                        console.error('❌ Error: setBounds recibió valores inválidos', { x, y, width: newWidth, height: newHeight });
+                    }
+                } catch (err) {
+                    console.error('❌ Error al redimensionar la ventana:', err);
+                }
             }
         }, 100);
     });
@@ -421,10 +432,10 @@ function getServiceNotificationConfig(serviceId) {
         'discord': { name: 'Discord', emoji: '🎮', color: '#5865F2' },
         'gmail': { name: 'Gmail', emoji: '📧', color: '#EA4335' },
         'instagram': { name: 'Instagram', emoji: '📷', color: '#E4405F' },
-        'twitter': { name: 'Twitter', emoji: '🐦', color: '#1DA1F2' },
+        'twitter': { name: 'Twitter/X', emoji: '🐦', color: '#1DA1F2' },
         'linkedin': { name: 'LinkedIn', emoji: '💼', color: '#0077B5' },
         'slack': { name: 'Slack', emoji: '💬', color: '#4A154B' },
-        'teams': { name: 'Teams', emoji: '👥', color: '#6264A7' },
+        'teams': { name: 'Microsoft Teams', emoji: '👥', color: '#6264A7' },
         'notion': { name: 'Notion', emoji: '📝', color: '#000000' },
         'spotify': { name: 'Spotify', emoji: '🎵', color: '#1DB954' },
         'arc-container': { name: 'Arc Container', emoji: '🚀', color: '#007AFF' }
